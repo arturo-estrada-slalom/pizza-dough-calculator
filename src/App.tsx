@@ -1,10 +1,13 @@
-import "./App.css";
+import { AppHeader } from "./components/AppHeader";
+import { Background, AppContainer } from "./App.styled";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Welcome to the Pizza Dough Calculator</h1>
-    </div>
+    <Background>
+      <AppContainer maxWidth="lg">
+        <AppHeader />
+      </AppContainer>
+    </Background>
   );
 }
 

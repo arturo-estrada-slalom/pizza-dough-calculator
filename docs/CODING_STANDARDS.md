@@ -182,9 +182,29 @@ once a test framework is configured (see `docs/PROJECT.md`).
   already provides the control — the project depends on
   `@mui/material`, `@emotion/react`, and `@emotion/styled` specifically
   for this.
-- Prefer MUI's `sx` prop for one-off styling. Only reach for a MUI
-  `styled()` wrapper or theme customization when a style is reused across
-  multiple components.
+- Prefer MUI's `styled()` API over inline `sx` props for styling both
+  HTML elements and MUI components. Define styled components (e.g.
+  `const Background = styled(Box)({ ... })`) instead of writing `sx={{
+  ... }}` inline in JSX. For example, prefer:
+  ```tsx
+  <Background>
+    <AppContainer>...</AppContainer>
+  </Background>
+  ```
+  over:
+  ```tsx
+  <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>...</Container>
+  </Box>
+  ```
+  Reserve `sx` for genuinely trivial, truly one-off tweaks (e.g. a single
+  spacing override) where introducing a styled component would be
+  excessive. Do not refactor existing `sx`-based code to this convention
+  unless you are already changing that code for another reason.
+- Place styled components for a file in a sibling file named
+  `<FileName>.styled.tsx` (e.g. `AppHeader.styled.tsx` for
+  `AppHeader.tsx`), and import them into the component file rather than
+  defining `styled()` components inline.
 - Do not introduce a separate CSS framework (Tailwind, Bootstrap, etc.)
   alongside MUI.
 - Use MUI layout primitives (`Box`, `Stack`, `Grid`) for layout instead of
