@@ -21,3 +21,23 @@ export const AppContainer = styled(Container)(({ theme }) => ({
     paddingRight: theme.spacing(3),
   },
 }));
+
+export const ContentLayout = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(3),
+  marginTop: theme.spacing(3),
+  [theme.breakpoints.up("md")]: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginTop: theme.spacing(4),
+  },
+}));
+
+export const SettingsColumn = styled(Box)(({ theme }) => ({
+  width: "100%",
+  [theme.breakpoints.up("md")]: {
+    maxWidth: 360,
+    flexShrink: 0,
+  },
+}));
