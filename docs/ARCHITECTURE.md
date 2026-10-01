@@ -82,6 +82,20 @@ calculations, or recipe scaling logic.
 
 React components should consume results produced by the domain layer.
 
+### Visual Design and Color Source of Truth
+
+Design mockups under `docs/designs/` define layout, visual hierarchy,
+component arrangement, spacing intent, and responsive visual direction.
+
+`docs/COLOR_PALETTE.md` is the authoritative source for application color
+values and their intended usage. When a color visible in a mockup or
+screenshot differs from, or is ambiguous relative to, the color guide, the
+color guide takes precedence.
+
+Color values should be defined once, through Material UI's theme
+mechanism, rather than duplicated as raw hex values throughout
+components. See `docs/CODING_STANDARDS.md` for the required approach.
+
 ---
 
 ## Domain Layer

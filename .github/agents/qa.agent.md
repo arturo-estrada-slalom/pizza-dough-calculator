@@ -15,6 +15,7 @@ Read:
 - `AGENTS.md`
 - `docs/PROJECT.md`
 - `docs/ARCHITECTURE.md`
+- `docs/COLOR_PALETTE.md`
 - `docs/TESTING.md`
 - `docs/AGENT_WORKFLOW.md`
 
@@ -33,7 +34,12 @@ Inspect the implementation and relevant tests.
 6. Check for regressions in related existing behavior.
 7. Verify that architectural constraints relevant to the change were
    preserved.
-8. Report defects without silently repairing them.
+8. When a story includes visual/color requirements, verify the colors
+   against `docs/COLOR_PALETTE.md` using the two-tier approach in
+   `docs/TESTING.md` Section 17 (theme-token diff, then a targeted
+   Playwright spot-check under `e2e/` if the story requires one) rather
+   than approximating them from screenshots or mockups.
+9. Report defects without silently repairing them.
 
 ## QA Report
 
@@ -79,6 +85,18 @@ Return exactly one overall status:
 - BLOCKED
 
 Explain the status briefly.
+
+## Durable Handoff
+
+Findings must not exist only as chat output. Append this QA attempt to the
+story's implementation report at
+`docs/reports/<story-number>-implementation.md` under a QA Verification
+History section, referencing acceptance criteria by their
+`AC-<story-number>-<NN>` ID, and update the story status (`Verified`,
+`Implementation Required`, or unchanged for `BLOCKED`) following the
+conventions defined in `docs/AGENT_WORKFLOW.md`. If the implementation
+report does not exist, treat verification as `BLOCKED` rather than
+proceeding without it.
 
 ## Restrictions
 

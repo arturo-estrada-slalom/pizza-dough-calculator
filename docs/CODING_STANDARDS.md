@@ -194,9 +194,16 @@ once a test framework is configured (see `docs/PROJECT.md`).
   controlled components: component state (or state passed via props)
   drives the MUI control's `value`, and the control's `onChange` updates
   that state — do not read values imperatively from the DOM.
-- If a custom theme is introduced later, define it once (e.g.
-  `src/theme.ts`) and apply it via a single `ThemeProvider` at the app
-  root — do not scatter theme overrides across components.
+- `docs/COLOR_PALETTE.md` is the authoritative source for application
+  color values. Do not introduce arbitrary hex/RGB values, and do not
+  estimate colors by sampling design mockups or screenshots when an
+  equivalent color is already defined by the palette guide.
+- Define the application's palette once through MUI's theme (e.g.
+  `createTheme({ palette: { ... } })` in `src/theme.ts`), using the
+  tokens documented in `docs/COLOR_PALETTE.md`, and apply it via a single
+  `ThemeProvider` at the app root — do not hard-code individual color
+  values inside component `sx` props/styles or scatter theme overrides
+  across components.
 
 ## 10. Error & Input Handling
 

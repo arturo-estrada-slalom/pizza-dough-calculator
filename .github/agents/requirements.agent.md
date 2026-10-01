@@ -15,6 +15,10 @@ Read:
 
 Consult other project documentation when relevant.
 
+When a story contains visual/UI requirements, recognize
+`docs/COLOR_PALETTE.md` as the authoritative design reference for color
+decisions, distinct from the layout-focused design mockups.
+
 Inspect the existing application when necessary to understand current
 behavior, but do not modify source code.
 
@@ -58,6 +62,13 @@ Relevant boundary conditions and unusual inputs.
 Only include questions that materially affect implementation.
 
 If there are no material questions, state that there are none.
+
+## Durable Handoff
+
+This analysis must not exist only as chat output. Persist it directly into
+the story file under `docs/stories/`, using the project's
+`AC-<story-number>-<NN>` acceptance-criteria numbering convention, so the
+story remains a self-contained artifact for the Implementation Agent.
 
 ## Restrictions
 

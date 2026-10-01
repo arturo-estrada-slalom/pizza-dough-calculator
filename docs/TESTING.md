@@ -2,11 +2,11 @@
 
 These standards apply to all tests written in this repository by AI coding
 and QA agents. They are derived from the tooling already configured in this
-project (see `package.json`, `vite.config.ts`, `src/test/setup.ts`). Do not
-introduce new testing libraries, mocking frameworks, coverage tools, or
-end-to-end test runners to satisfy these standards — the goal is
-straightforward, meaningful tests for a small deterministic app, not a large
-test infrastructure.
+project (see `package.json`, `vite.config.ts`, `playwright.config.ts`,
+`src/test/setup.ts`). Do not introduce new testing libraries, mocking
+frameworks, coverage tools, or additional end-to-end runners beyond what is
+already configured here — the goal is straightforward, meaningful tests for
+a small deterministic app, not a large test infrastructure.
 
 This document assumes familiarity with `docs/PROJECT.md` (domain model and
 calculation rules) and `docs/CODING_STANDARDS.md` (code conventions,
@@ -55,9 +55,16 @@ import { describe, it, expect } from 'vitest'
 
 Do not rely on global `describe`/`it`/`expect` — they are not injected.
 
-There is no coverage tool, snapshot testing, mocking library (e.g. MSW),
-or end-to-end runner (e.g. Playwright/Cypress) configured. Do not add test
-code that depends on them.
+There is no coverage tool or mocking library (e.g. MSW) configured. Do not
+add test code that depends on them.
+
+**Playwright** (`@playwright/test`) is configured, via `playwright.config.ts`
+at the repository root, strictly for the targeted rendered-color/visual
+verification described in Section 17. It is not a general-purpose e2e or
+UI-behavior testing tool for this project — functional UI behavior stays in
+Vitest/RTL per Sections 5–6. Do not write general interaction/navigation
+tests, full visual-regression screenshot diffing, or broad e2e coverage with
+it; that would exceed this app's testing needs.
 
 ## 3. Test File Naming & Location
 
@@ -286,11 +293,50 @@ it('returns 2880g total dough for six 16-inch pizzas', () => {
 - `npm run test` — runs Vitest in watch mode. Useful for interactive
   development; agents should generally avoid this mode since it does not
   exit.
-- `npm run test:run` — runs the full suite once and exits with a
+- `npm run test:run` — runs the full Vitest suite once and exits with a
   pass/fail status code. **Agents should use this command** to verify
-  changes, since it terminates on its own and is safe for automated
-  workflows.
+  domain and component changes, since it terminates on its own and is
+  safe for automated workflows.
+- `npm run test:e2e` — runs the Playwright suite once (starts the Vite
+  dev server automatically per `playwright.config.ts`) and exits with a
+  pass/fail status code. Use this only when verifying rendered-color/
+  visual requirements per Section 17.
 - There is no separate lint-for-tests or coverage command configured.
   Test files are still subject to the project's ESLint/TypeScript rules
   (per `docs/CODING_STANDARDS.md`) and must pass `npm run lint` and
   `npm run build` like any other source file.
+
+## 17. Visual/Color Verification
+
+Rendered color cannot be verified through Vitest/RTL: `jsdom` does not
+perform real layout or paint, so `getComputedStyle` results there are
+unreliable for CSS applied via MUI's theme/emotion engine. Visual/color
+requirements are verified using a two-tier approach instead:
+
+1. **Theme-token diff (primary, do this first).** Once the application
+   defines a central MUI theme (see `docs/CODING_STANDARDS.md` Section 9),
+   confirm the theme's palette values are copied exactly from
+   `docs/COLOR_PALETTE.md` — this is a plain text/value comparison, not a
+   rendering check, and catches the most common failure (wrong or drifted
+   constant).
+2. **Targeted Playwright spot-check (when a story has a specific visual
+   requirement).** Write a minimal Playwright spec under `e2e/` (e.g.
+   `e2e/dough-ball-card.spec.ts`) that navigates to the running app and
+   asserts `getComputedStyle`/`boundingClientRect`-derived color values
+   for the *specific* documented element (e.g. the Dough Ball card's dark
+   surface, the slider's primary accent) against the exact hex/rgba values
+   in `docs/COLOR_PALETTE.md`. Do not screenshot-diff or snapshot entire
+   pages — assert only the specific color token(s) the story requires.
+
+Conventions for this spec tier:
+
+- Location: `e2e/`, file naming `*.spec.ts`.
+- Run with `npm run test:e2e` (see Section 16). The dev server starts
+  automatically; do not start it manually first.
+- Keep specs minimal and few — one spec per visually-significant element
+  introduced by a story, not a spec per component.
+- These specs verify color only. Functional UI behavior (interactions,
+  state updates, displayed values) stays in Vitest/RTL component tests per
+  Sections 5–6 — do not duplicate that coverage here.
+- Do not add visual-regression/screenshot-diffing tooling (e.g. Chromatic,
+  `toHaveScreenshot`) — that exceeds this app's testing needs.

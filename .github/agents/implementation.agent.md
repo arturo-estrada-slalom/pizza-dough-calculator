@@ -10,6 +10,7 @@ Read:
 - `AGENTS.md`
 - `docs/PROJECT.md`
 - `docs/ARCHITECTURE.md`
+- `docs/COLOR_PALETTE.md`
 - `docs/CODING_STANDARDS.md`
 - `docs/TESTING.md`
 - `docs/AGENT_WORKFLOW.md`
@@ -37,6 +38,10 @@ Then implement the plan.
 - Follow the documented architecture.
 - Keep domain calculations independent from React.
 - Follow the project's TypeScript and React conventions.
+- Use documented color values from `docs/COLOR_PALETTE.md` instead of
+  arbitrary colors or colors estimated from screenshots/mockups when
+  implementing or styling UI, applied through the project's single
+  theme/token mechanism (see `docs/CODING_STANDARDS.md`).
 - Reuse existing abstractions where appropriate.
 - Avoid unnecessary abstractions.
 - Add or update tests for changed behavior.
@@ -72,6 +77,13 @@ Commands executed and their results.
 ### Remaining Concerns
 
 Anything that should be considered during QA.
+
+## Durable Handoff
+
+This report must not exist only as chat output. Create or update the
+story's implementation report at `docs/reports/<story-number>-implementation.md`
+before moving the story to `Ready for QA`, following the durable handoff and
+story status conventions defined in `docs/AGENT_WORKFLOW.md`.
 
 ## Restrictions
 

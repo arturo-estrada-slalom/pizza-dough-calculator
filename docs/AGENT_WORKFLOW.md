@@ -81,6 +81,16 @@ to their task as defined by `AGENTS.md`.
 The documentation under `/docs` represents the project's shared context and
 source of truth.
 
+Design responsibility is distributed across documents: design mockups under
+`docs/designs/` define layout, visual hierarchy, component arrangement, and
+responsive direction; `docs/COLOR_PALETTE.md` defines authoritative color
+values and their intended usage; `docs/PROJECT.md` and applicable stories
+define product and domain behavior; and `docs/ARCHITECTURE.md`,
+`docs/CODING_STANDARDS.md`, and `docs/TESTING.md` govern their respective
+technical concerns. When a color visible in a mockup conflicts with, or is
+ambiguous relative to, `docs/COLOR_PALETTE.md`, the color guide takes
+precedence.
+
 Agents must not silently override documented requirements, architectural
 decisions, coding standards, or testing conventions.
 
@@ -330,6 +340,83 @@ implementation, and returns it for another QA pass.
 
 This loop continues until the change passes verification or human intervention
 is required.
+
+---
+
+## Story Status Lifecycle
+
+Agents are responsible for maintaining story status as work progresses.
+
+Valid statuses are:
+
+- Draft
+- Ready for Implementation
+- In Progress
+- Ready for QA
+- Implementation Required
+- Verified
+
+The normal lifecycle is:
+
+    Draft
+      ↓
+    Ready for Implementation
+      ↓
+    In Progress
+      ↓
+    Ready for QA
+      ↓
+    Verified
+
+The Requirements Agent may move a story from Draft to Ready for
+Implementation only when requirements analysis is complete and no blocking
+open questions remain.
+
+The Implementation Agent moves an eligible story to In Progress when
+implementation begins and to Ready for QA only after implementation and
+developer-side verification are complete.
+
+If QA reports FAIL, the QA Agent changes the story status to Implementation
+Required.
+
+After defects are corrected, the Implementation Agent returns the story to
+Ready for QA.
+
+If QA reports PASS, the QA Agent changes the story status to Verified.
+
+If QA reports BLOCKED, the story remains Ready for QA and the blocking reason
+must be documented.
+
+Agents must not skip workflow states or mark work Verified without independent
+QA verification.
+
+---
+
+## Durable Handoff Artifact
+
+Implementation work must not exist only as conversational output.
+
+For each story, the Implementation Agent creates and maintains an
+implementation report at:
+
+    docs/reports/<story-number>-implementation.md
+
+This report is the durable, shared record between the Implementation Agent
+and the QA Agent. It must describe the CURRENT implementation being
+submitted for verification, not merely the original plan, and must be
+created or updated before a story moves to Ready for QA.
+
+When QA returns a story as Implementation Required, the Implementation Agent
+updates the same report, appending a Rework History entry, rather than
+creating a new report.
+
+The QA Agent appends its findings to the same report, under a QA
+Verification History section, for every verification attempt, and must not
+treat prior report content as proof of correctness — verification is always
+performed independently.
+
+Neither agent should rely on conversational context being available to the
+other; the report in the repository is the source of truth for handoff.
 
 ---
 
