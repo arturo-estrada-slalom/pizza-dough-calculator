@@ -13,7 +13,7 @@ export function AppHeader() {
         <IconBadge aria-hidden="true">🍕</IconBadge>
         <Title variant="h1">Pizza Dough Calculator</Title>
       </TitleRow>
-      <Subtitle variant="subtitle1" color="text.secondary">
+      <Subtitle variant="subtitle1">
         Baker's percentages for home & professional use
       </Subtitle>
     </HeaderRoot>

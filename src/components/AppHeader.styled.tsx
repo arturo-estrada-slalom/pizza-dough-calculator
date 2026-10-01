@@ -49,6 +49,7 @@ export const Title = styled(Typography)(({ theme }) => ({
 }));
 
 export const Subtitle = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
   fontSize: "0.95rem",
   [theme.breakpoints.up("sm")]: {
     fontSize: "1.05rem",
