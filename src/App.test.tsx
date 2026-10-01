@@ -14,10 +14,17 @@ describe("<App />", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render out-of-scope Pizza Settings, Dough Ball, Recipe Summary, or Ingredients UI", () => {
+  it("renders the Pizza Settings panel", () => {
     render(<App />);
 
-    expect(screen.queryByText(/Pizza Settings/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Pizza Settings" }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not render out-of-scope Dough Ball, Recipe Summary, or Ingredients UI", () => {
+    render(<App />);
+
     expect(screen.queryByText(/Dough Ball/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Recipe Summary/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Ingredients/i)).not.toBeInTheDocument();

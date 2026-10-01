@@ -22,3 +22,7 @@ export const theme = createTheme({
 // Primary tint overlay (docs/COLOR_PALETTE.md "Primary tint"), used for the
 // pizza icon/branding treatment behind the emoji.
 export const pizzaIconBackground = "rgba(184, 92, 42, 0.12)";
+
+// Medium emphasis text (docs/COLOR_PALETTE.md "Medium emphasis"), used for
+// body text such as unit labels (e.g. "inches", "pizzas").
+export const textMediumEmphasis = "#4A3728";

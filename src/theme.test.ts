@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { theme, pizzaIconBackground } from "./theme";
+import { theme, pizzaIconBackground, textMediumEmphasis } from "./theme";
 
 describe("theme", () => {
     it("uses the documented page background and card/paper colors", () => {
@@ -23,5 +23,9 @@ describe("theme", () => {
 
     it("uses a documented primary-tint overlay for the pizza icon background", () => {
         expect(pizzaIconBackground).toBe("rgba(184, 92, 42, 0.12)");
+    });
+
+    it("uses the documented medium-emphasis text color", () => {
+        expect(textMediumEmphasis).toBe("#4A3728");
     });
 });
