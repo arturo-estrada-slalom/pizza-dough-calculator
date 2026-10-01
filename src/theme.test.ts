@@ -1,5 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { theme, pizzaIconBackground, textMediumEmphasis } from "./theme";
+import {
+    theme,
+    pizzaIconBackground,
+    textMediumEmphasis,
+    doughBallCardBackground,
+    doughBallWeightColor,
+    textInverted,
+    primaryTint,
+    strongDivider,
+} from "./theme";
 
 describe("theme", () => {
     it("uses the documented page background and card/paper colors", () => {
@@ -27,5 +36,25 @@ describe("theme", () => {
 
     it("uses the documented medium-emphasis text color", () => {
         expect(textMediumEmphasis).toBe("#4A3728");
+    });
+
+    it("uses the documented dark-surface color for the Dough Ball card background", () => {
+        expect(doughBallCardBackground).toBe("#2C1F14");
+    });
+
+    it("uses the documented warm-gold color for the dough-ball weight number", () => {
+        expect(doughBallWeightColor).toBe("#F5C896");
+    });
+
+    it("uses the documented inverted text color", () => {
+        expect(textInverted).toBe("#FFFCF5");
+    });
+
+    it("uses a documented primary-tint overlay for chip fills and row highlights", () => {
+        expect(primaryTint).toBe("rgba(184, 92, 42, 0.12)");
+    });
+
+    it("uses the documented strong-divider color", () => {
+        expect(strongDivider).toBe("rgba(74,55,40,0.20)");
     });
 });
