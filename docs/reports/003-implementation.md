@@ -193,3 +193,98 @@ token (same as the Pizza Settings card).
   subtitle is part of the single placeholder data set and is
   intentionally unrelated to the Pizza Settings panel's own default count
   (4), per the story's explicit scope (no wiring between the two).
+
+## QA Verification History
+
+### Attempt 1 — PASS
+
+**Result:** PASS
+
+**Acceptance criteria verified:** AC-003-01, AC-003-02, AC-003-03,
+AC-003-04, AC-003-05, AC-003-06, AC-003-07, AC-003-08, AC-003-09,
+AC-003-10, AC-003-11, AC-003-12, AC-003-13, AC-003-14, AC-003-15,
+AC-003-16 (all 16 — IDs per the story file, `docs/stories/003-results-presentation.md`).
+
+**Acceptance criteria that failed or could not be verified:** None.
+
+**Verification commands executed:**
+
+- `npm run lint` — passed, no errors.
+- `npm run build` (`tsc -b && vite build`) — passed, no type errors.
+- `npm run test:run` — 7 test files, 40 tests passed.
+- `npm run test:e2e` — 7 Playwright tests passed (4 pre-existing +
+  3 new, confirming no regression in Story 001/002 color spot-checks).
+- `git diff HEAD~1 -- package.json` / manual inspection — confirmed
+  `dependencies` unchanged (AC-003-16).
+- `grep` across `src/` for calculation function names
+  (`calculateDoughBallWeight`, `calculateTotalDoughWeight`,
+  `calculateRecipe`, `thicknessFactor`) and a search for a `domain/`
+  directory — both returned no matches, confirming no domain/calculation
+  logic was introduced.
+
+**Manual/UI verification performed:**
+
+- Started the dev server and loaded the app in a real browser
+  (Playwright-driven), captured an accessibility-tree snapshot and
+  confirmed the Dough Ball ("480 g", "× 6", `per 16" standard pizza`),
+  Recipe Summary (2880 g / 1692.13 g / 1049.12 g / 62%, in order), and
+  Ingredients table (all six ingredients with name/weight/%, Bread Flour
+  "BASE", Total Dough 2880 g) content and order match the story and the
+  report's claims (AC-003-01 through AC-003-08).
+- At a 1280×900 viewport, measured bounding boxes: `Pizza Settings`
+  heading at x=89 (width 310, right edge ≈399) vs. `Dough Ball result`
+  region at x=448 — confirmed the results column sits to the right of
+  Pizza Settings, with `Dough Ball` (y≈165) above `Recipe Summary`
+  (y≈397) above `Ingredients` (y≈556) — AC-003-10 confirmed directly
+  (not merely by code review).
+- At a 390×844 viewport, measured bounding boxes: `Pizza Settings`
+  (y≈172) above `Dough Ball result` (y≈624) above `Recipe Summary`
+  (y≈855) above `Ingredients` (y≈1091) — confirmed the stacked order is
+  preserved — AC-003-11 confirmed directly. Also confirmed
+  `document.body.scrollWidth === document.documentElement.clientWidth`
+  (390 = 390) and the Ingredients table container's `scrollWidth`
+  ≈ `clientWidth` (309 vs. 308, a 1px rounding difference only) — no
+  horizontal overflow.
+- Interacting with Pizza Settings (diameter slider arrow key, pizza-count
+  increment button) in the RTL `App.test.tsx` test leaves "480", "2880",
+  and "Bread Flour" unchanged — AC-003-09 re-confirmed.
+- Verified placeholder math directly: 480 × 6 = 2880; the six ingredient
+  weights (1692.13 + 1049.12 + 6.77 + 42.3 + 33.84 + 55.84) sum to
+  2880.00 — exactly matching the displayed Total Dough value
+  (AC-003-15).
+- Theme-token diff (`src/theme.test.ts`, Tier 1 of `docs/TESTING.md`
+  §17) and the Playwright color spot-checks (`e2e/results-presentation.spec.ts`,
+  Tier 2) both independently confirm the Dough Ball dark-surface
+  (`rgb(44, 31, 20)`) / warm-gold (`rgb(245, 200, 150)`) colors
+  (AC-003-12), the Recipe Summary/Ingredients card/paper background
+  (`rgb(255, 252, 245)`) (AC-003-13), and the Bread Flour row's
+  primary-tint background (`rgba(184, 92, 42, 0.12)`) (AC-003-14).
+
+**Findings:**
+
+- No functional defects found. All 16 acceptance criteria independently
+  verified against the approved story text (not merely against the
+  implementation report's claims).
+- **Documentation/traceability defect (non-blocking):** this report's
+  "Acceptance Criteria Addressed" section mislabels several items — the
+  content under its `AC-003-02` is actually the story's `AC-003-12`
+  (Dough Ball card colors); its `AC-003-03`/`AC-003-04` entries are the
+  story's `AC-003-02` (Recipe Summary metrics) and `AC-003-03`/`AC-003-04`
+  (Ingredients list/row content) combined; its `AC-003-09`/`AC-003-10`
+  entries both correspond to the story's single `AC-003-09`; and its
+  `AC-003-11`/`AC-003-12` entries are actually the story's `AC-003-10`
+  (desktop layout) and `AC-003-11` (mobile layout). Every underlying
+  criterion is still functionally covered and was independently
+  re-verified above against the story's actual `AC-003-NN` text, so this
+  does not affect the PASS result, but the report's ID labels should be
+  corrected in a future pass so the durable record maps 1:1 to
+  `docs/stories/003-results-presentation.md`.
+- The known cosmetic divider artifact on wrapped Recipe Summary metrics
+  (noted above under "Known Issues") was re-confirmed as cosmetic only —
+  no clipping or overflow was observed at a 390px viewport.
+
+**Regression concerns:** None observed. `e2e/app-shell.spec.ts` and
+`e2e/pizza-settings.spec.ts` (Story 001/002 color spot-checks) continue
+to pass alongside the new `e2e/results-presentation.spec.ts`, and
+`App.test.tsx`'s pre-existing header/Pizza Settings assertions still
+pass.

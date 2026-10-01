@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready for QA
+Verified
 
 ## User Story
 
