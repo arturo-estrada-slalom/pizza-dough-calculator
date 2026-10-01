@@ -41,3 +41,14 @@ export const SettingsColumn = styled(Box)(({ theme }) => ({
     flexShrink: 0,
   },
 }));
+
+export const ResultsColumn = styled(Box)(({ theme }) => ({
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(3),
+  minWidth: 0,
+  [theme.breakpoints.up("md")]: {
+    flex: 1,
+  },
+}));

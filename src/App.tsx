@@ -1,10 +1,14 @@
 import { AppHeader } from "./components/AppHeader";
 import { PizzaSettings } from "./components/PizzaSettings";
+import { DoughBallResult } from "./components/DoughBallResult";
+import { RecipeSummary } from "./components/RecipeSummary";
+import { Ingredients } from "./components/Ingredients";
 import {
   Background,
   AppContainer,
   ContentLayout,
   SettingsColumn,
+  ResultsColumn,
 } from "./App.styled";
 
 function App() {
@@ -16,6 +20,11 @@ function App() {
           <SettingsColumn>
             <PizzaSettings />
           </SettingsColumn>
+          <ResultsColumn>
+            <DoughBallResult />
+            <RecipeSummary />
+            <Ingredients />
+          </ResultsColumn>
         </ContentLayout>
       </AppContainer>
     </Background>

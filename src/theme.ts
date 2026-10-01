@@ -26,3 +26,24 @@ export const pizzaIconBackground = "rgba(184, 92, 42, 0.12)";
 // Medium emphasis text (docs/COLOR_PALETTE.md "Medium emphasis"), used for
 // body text such as unit labels (e.g. "inches", "pizzas").
 export const textMediumEmphasis = "#4A3728";
+
+// Dark surface (docs/COLOR_PALETTE.md "Dark surface"), used for the Dough
+// Ball hero card background.
+export const doughBallCardBackground = "#2C1F14";
+
+// Warm gold (docs/COLOR_PALETTE.md "Warm gold"), used for the dough-ball
+// weight number on the Dough Ball card's dark surface.
+export const doughBallWeightColor = "#F5C896";
+
+// Inverted text (docs/COLOR_PALETTE.md "Inverted"), used for text on the
+// Dough Ball card's dark surface.
+export const textInverted = "#FFFCF5";
+
+// Primary tint overlay (docs/COLOR_PALETTE.md "Primary tint"), used for chip
+// fills (the Dough Ball pizza-count chip, the Ingredients "BASE" chip) and
+// row highlights (the Bread Flour base-ingredient row).
+export const primaryTint = "rgba(184, 92, 42, 0.12)";
+
+// Strong divider (docs/COLOR_PALETTE.md "Strong divider"), used for the
+// Ingredients table header border and total-dough row border.
+export const strongDivider = "rgba(74,55,40,0.20)";

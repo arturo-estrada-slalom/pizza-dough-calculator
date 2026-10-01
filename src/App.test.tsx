@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import App from "./App";
 
 describe("<App />", () => {
@@ -22,11 +23,31 @@ describe("<App />", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render out-of-scope Dough Ball, Recipe Summary, or Ingredients UI", () => {
+  it("renders the Dough Ball, Recipe Summary, and Ingredients results sections", () => {
     render(<App />);
 
-    expect(screen.queryByText(/Dough Ball/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Recipe Summary/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Ingredients/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Dough Ball")).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Recipe Summary" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Ingredients" }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not change the results sections when Pizza Settings controls are changed", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const diameterSlider = screen.getByRole("slider", { name: "Diameter" });
+    diameterSlider.focus();
+    await user.keyboard("{ArrowRight}");
+    await user.click(
+      screen.getByRole("button", { name: /increase number of pizzas/i }),
+    );
+
+    expect(screen.getByText("480")).toBeInTheDocument();
+    expect(screen.getByText("2880")).toBeInTheDocument();
+    expect(screen.getByText("Bread Flour")).toBeInTheDocument();
   });
 });
