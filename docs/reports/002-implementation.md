@@ -145,3 +145,100 @@ no prior consumer.
   panel (no Recipe Results sibling exists yet); the right-hand column will
   be added by a later story and was not stubbed here, per the story's
   explicit out-of-scope list.
+
+## QA Verification History
+
+### Attempt 1 — PASS
+
+**Result:** PASS
+
+**Acceptance criteria verified (PASS):** AC-002-01, AC-002-02, AC-002-03,
+AC-002-04, AC-002-05, AC-002-06, AC-002-07, AC-002-08, AC-002-09,
+AC-002-10, AC-002-11, AC-002-12, AC-002-13, AC-002-14, AC-002-15,
+AC-002-16, AC-002-17, AC-002-18.
+
+**Acceptance criteria failed or not verified:** None.
+
+**Verification commands executed:**
+
+- `npm run lint` — passed, no errors.
+- `npm run build` (`tsc -b && vite build`) — passed, no type errors.
+- `npm run test:run` — 4 test files, 25 tests passed.
+- `npm run test:e2e` — 4 tests passed (2 pre-existing + 2 new,
+  `e2e/pizza-settings.spec.ts`), independently re-run and confirmed
+  against the exact `docs/COLOR_PALETTE.md` values for AC-002-17 and
+  AC-002-18.
+
+**Manual/UI verification performed:**
+
+- Started the dev server and loaded the app in a real browser (not just
+  jsdom) to independently verify behavior not covered by the automated
+  suite.
+- Confirmed default state: Diameter slider at 14 with "14"/"inches" and
+  "10"/"20"" range labels; Thickness group with Thin/Thick disabled and
+  Standard `pressed`; Number of Pizzas at 4.
+- At 1280×800 (desktop width), confirmed the Pizza Settings panel renders
+  as the fixed-width (360px) left-side card, visually consistent with
+  `docs/designs/desktop-pizza-layout.png` (AC-002-14). This was verified
+  directly in-browser rather than relying solely on the Implementation
+  Agent's code-review claim, since `docs/TESTING.md` §17 does not mandate
+  an automated viewport test but QA must independently confirm, not
+  merely trust, the report.
+- At 390×844 and 320×700 (mobile/narrow widths), confirmed the panel
+  stacks full-width, consistent with `docs/designs/mobile-layout.png`,
+  with no horizontal overflow (`document.documentElement.scrollWidth` ===
+  `clientWidth` === viewport width) and no clipped/truncated controls
+  (AC-002-15, narrow-viewport edge case).
+- Changed the diameter (keyboard arrow keys, 14 → 17) and pizza count
+  (increment clicks, 4 → 6), then resized from desktop (1280px) to mobile
+  (390px) width: confirmed both values were preserved unchanged across
+  the breakpoint transition (diameter edge case; AC-002-15 interaction
+  with state).
+- Confirmed the increment control responds to both `Enter` and `Space`
+  keyboard activation while focused (accessible activation edge case),
+  observing the count increase on each activation.
+- Re-confirmed via the accessibility snapshot that Thin/Thick render with
+  `[disabled]` and Standard renders `[pressed]`, and that the increment/
+  decrement buttons expose native `disabled` semantics at their
+  respective 100/1 boundaries (already covered by RTL tests; spot-checked
+  live in-browser as well).
+- Compared the live rendering side-by-side against
+  `docs/designs/desktop-pizza-layout.png` and
+  `docs/designs/mobile-layout.png`: layout, spacing, section order
+  (Diameter → Thickness → Number of Pizzas), and control treatment match
+  the design intent for the Pizza Settings panel (other mockup sections —
+  Dough Ball, Recipe Summary, Ingredients — are correctly absent, per
+  scope).
+
+**Findings:**
+
+- No defects found. All 18 acceptance criteria are satisfied.
+- Confirmed by code review: `PizzaSettings.tsx` contains only local
+  `useState`, no import from any domain module (none exists in the
+  codebase), and no Dough Ball/Recipe Summary/Ingredients UI is rendered
+  anywhere in `App.tsx` — consistent with the Explicitly Out of Scope
+  list and AC-002-08/AC-002-16.
+- Confirmed by code review: no new runtime dependencies were added
+  (`package.json` still lists only the previously approved
+  `@mui/material`, `@emotion/react`, `@emotion/styled`, `react`,
+  `react-dom`); diameter/pizza-count are constrained via the `Slider`'s
+  own `min`/`max`/`step` and disabled `IconButton`s, not hand-written
+  range-checking; styled components live in
+  `PizzaSettings.styled.tsx`; colors are sourced from `src/theme.ts`
+  (`primary.main`, `background.paper`) and the new
+  `textMediumEmphasis` token, not hard-coded hex values in component
+  code.
+- The Known Issues note regarding AC-002-14/15 (no automated
+  viewport/breakpoint test exists in this project's configured tooling)
+  is accurate per `docs/TESTING.md` §17 scoping Playwright strictly to
+  color spot-checks; QA closed this gap with independent manual
+  in-browser verification at multiple viewport widths as recorded above,
+  rather than accepting the code-review claim at face value.
+
+**Regression concerns:** None observed. `App.test.tsx`'s existing
+out-of-scope assertions (no Dough Ball/Recipe Summary/Ingredients text)
+and `AppHeader`'s rendering were re-verified as passing alongside the new
+Pizza Settings coverage; no changes to `AppHeader.tsx`/`.styled.tsx` were
+made by this story.
+
+**Story status:** Changed from `Ready for QA` to `Verified`.
