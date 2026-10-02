@@ -8,6 +8,7 @@ describe("<DoughBallResult />", () => {
       <DoughBallResult
         doughBallWeightGrams={480}
         diameter={16}
+        thickness="standard"
         pizzaCount={6}
       />,
     );
@@ -24,6 +25,7 @@ describe("<DoughBallResult />", () => {
       <DoughBallResult
         doughBallWeightGrams={480}
         diameter={16}
+        thickness="standard"
         pizzaCount={6}
       />,
     );
@@ -38,11 +40,38 @@ describe("<DoughBallResult />", () => {
       <DoughBallResult
         doughBallWeightGrams={367.5}
         diameter={14}
+        thickness="standard"
         pizzaCount={10}
       />,
     );
 
     expect(screen.getByText("367.5")).toBeInTheDocument();
     expect(screen.getByText("× 10")).toBeInTheDocument();
+  });
+
+  it("reflects the Thin thickness in the contextual text", () => {
+    render(
+      <DoughBallResult
+        doughBallWeightGrams={384}
+        diameter={16}
+        thickness="thin"
+        pizzaCount={4}
+      />,
+    );
+
+    expect(screen.getByText('per 16" thin pizza')).toBeInTheDocument();
+  });
+
+  it("reflects the Thick thickness in the contextual text", () => {
+    render(
+      <DoughBallResult
+        doughBallWeightGrams={576}
+        diameter={16}
+        thickness="thick"
+        pizzaCount={4}
+      />,
+    );
+
+    expect(screen.getByText('per 16" thick pizza')).toBeInTheDocument();
   });
 });

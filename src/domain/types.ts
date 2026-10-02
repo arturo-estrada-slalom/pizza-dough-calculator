@@ -6,6 +6,8 @@ export type IngredientKey =
   | "sugar"
   | "oliveOil";
 
+export type Thickness = "thin" | "standard" | "thick";
+
 export type IngredientDefinition = {
   key: IngredientKey;
   name: string;
