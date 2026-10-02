@@ -71,15 +71,32 @@ describe("<App />", () => {
     expect(screen.getByText("367.5")).toBeInTheDocument();
   });
 
-  it("does not change calculated values when interacting with the disabled Thickness options", () => {
+  it("recalculates the Dough Ball, Total Dough, Total Flour, and Total Water when the thickness changes, without altering baker's percentages or hydration", async () => {
+    const user = userEvent.setup();
     render(<App />);
 
     expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
-    expect(screen.getByRole("button", { name: "Thin" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Thick" })).toBeDisabled();
+    // Default settings: 14" diameter, 4 pizzas, Standard -> 367.5g dough ball.
     expect(screen.getByText("367.5")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Thick" }));
+
+    expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    // Thick applies a 1.20 factor: 367.5 x 1.20 = 441g dough ball.
+    expect(screen.getByText("441")).toBeInTheDocument();
+    expect(screen.getByText('per 14" thick pizza')).toBeInTheDocument();
+    // Baker's percentages and hydration remain unaffected by thickness.
+    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.getByText("62")).toBeInTheDocument();
   });
 });

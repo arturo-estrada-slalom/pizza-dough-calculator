@@ -1,4 +1,5 @@
 import { formatWeight } from "../utils/formatWeight";
+import type { Thickness } from "../domain/types";
 import {
   DoughBallCard,
   DoughBallHeader,
@@ -12,12 +13,14 @@ import {
 type DoughBallResultProps = {
   doughBallWeightGrams: number;
   diameter: number;
+  thickness: Thickness;
   pizzaCount: number;
 };
 
 export function DoughBallResult({
   doughBallWeightGrams,
   diameter,
+  thickness,
   pizzaCount,
 }: DoughBallResultProps) {
   return (
@@ -34,7 +37,9 @@ export function DoughBallResult({
         </DoughBallWeightNumber>
         <span className="unit">g</span>
       </DoughBallWeightRow>
-      <DoughBallContext>per {diameter}" standard pizza</DoughBallContext>
+      <DoughBallContext>
+        per {diameter}" {thickness} pizza
+      </DoughBallContext>
     </DoughBallCard>
   );
 }

@@ -1,10 +1,20 @@
-import type { IngredientDefinition, IngredientKey } from "./types";
+import type { IngredientDefinition, IngredientKey, Thickness } from "./types";
 
 // Single source of truth for the reference pizza (docs/PROJECT.md).
 export const REFERENCE_PIZZA = {
   diameter: 16,
   doughWeight: 480,
 };
+
+// Single source of truth for thickness multipliers applied to the Standard
+// dough-ball weight (docs/stories/005-thickness-factors.md).
+export const THICKNESS_FACTORS: Record<Thickness, number> = {
+  thin: 0.8,
+  standard: 1.0,
+  thick: 1.2,
+};
+
+export const DEFAULT_THICKNESS: Thickness = "standard";
 
 export const RECIPE_INGREDIENT_ORDER: IngredientKey[] = [
   "flour",

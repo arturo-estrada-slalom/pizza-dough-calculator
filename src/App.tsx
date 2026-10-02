@@ -13,6 +13,7 @@ import {
   calculateTotalDoughWeight,
 } from "./domain/doughCalculator";
 import { calculateRecipe } from "./domain/recipeCalculator";
+import { DEFAULT_THICKNESS } from "./domain/recipe";
 import {
   Background,
   AppContainer,
@@ -23,9 +24,10 @@ import {
 
 function App() {
   const [diameter, setDiameter] = useState(DIAMETER_DEFAULT);
+  const [thickness, setThickness] = useState(DEFAULT_THICKNESS);
   const [pizzaCount, setPizzaCount] = useState(PIZZA_COUNT_DEFAULT);
 
-  const doughBallWeightGrams = calculateDoughBallWeight(diameter);
+  const doughBallWeightGrams = calculateDoughBallWeight(diameter, thickness);
   const totalDoughWeightGrams = calculateTotalDoughWeight(
     doughBallWeightGrams,
     pizzaCount,
@@ -41,6 +43,8 @@ function App() {
             <PizzaSettings
               diameter={diameter}
               onDiameterChange={setDiameter}
+              thickness={thickness}
+              onThicknessChange={setThickness}
               pizzaCount={pizzaCount}
               onPizzaCountChange={setPizzaCount}
             />
@@ -49,6 +53,7 @@ function App() {
             <DoughBallResult
               doughBallWeightGrams={doughBallWeightGrams}
               diameter={diameter}
+              thickness={thickness}
               pizzaCount={pizzaCount}
             />
             <RecipeSummary

@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Verified
 
 ## User Story
 
@@ -26,6 +26,64 @@ existing dough calculation without modification.
 
 This story activates the thickness selector and incorporates thickness into
 the dough calculation.
+
+---
+
+## Feature Summary
+
+Enable the previously inert Thickness selector (Thin / Standard / Thick) in
+Pizza Settings and incorporate the selected thickness into the dough and
+recipe calculations. Selecting a thickness applies a fixed multiplier (Thin
+0.80, Standard 1.00, Thick 1.20) to the diameter-scaled Standard dough-ball
+weight established in Story 004, and all dependent results (total dough,
+flour, water, and every ingredient weight) recompute immediately. Baker's
+percentages and hydration remain fixed and unaffected by thickness. Standard
+remains the default selection and continues to reproduce Story 004's
+documented results exactly.
+
+## Functional Requirements
+
+1. The Thickness selector shall allow selecting exactly one of Thin,
+   Standard, or Thick at a time, with all three options enabled (removing
+   the Story 004 restriction that disabled Thin and Thick).
+2. Standard shall remain the default selected thickness when the
+   application first loads.
+3. Thickness factors (Thin 0.80, Standard 1.00, Thick 1.20) shall be
+   defined once, as domain configuration, and shall not be duplicated or
+   hard-coded in React components or other calculation functions.
+4. The domain dough-ball calculation shall multiply the existing
+   diameter-based Standard dough-ball weight
+   (`480 × (diameter / 16)²`) by the selected thickness factor to produce
+   the final dough-ball weight, implemented as a pure, framework-independent
+   function.
+5. Total dough weight shall continue to be derived from the final
+   (thickness-adjusted) dough-ball weight multiplied by the number of
+   pizzas.
+6. Recipe ingredient weights (flour, water, yeast, salt, sugar, olive oil)
+   shall continue to be derived from the final total dough weight using the
+   existing, unmodified baker's-percentage formula.
+7. Baker's percentage display values and the displayed hydration value
+   shall remain unchanged by thickness selection, since thickness affects
+   only the total dough weight that percentages are applied to, not the
+   percentages themselves.
+8. Thickness shall be part of the calculator's active input state (along
+   with diameter and number of pizzas), and all dependent results shall be
+   derived from current state rather than stored as independent, separately
+   updated copies.
+9. Changing thickness shall update the Dough Ball weight, Total Dough
+   weight, Total Flour, Total Water, and all ingredient weights immediately,
+   without requiring a separate Calculate or Submit action.
+10. The selected thickness option shall be visually indicated using the
+    primary accent color defined in `docs/COLOR_PALETTE.md`, and no more
+    than one option shall appear selected at a time.
+11. The Dough Ball result's contextual text shall reflect the selected
+    thickness (e.g. "per 16" thin pizza", "per 16" standard pizza", "per
+    16" thick pizza").
+12. Changing diameter or number of pizzas shall not alter the currently
+    selected thickness; the selected thickness shall continue to apply to
+    recalculations triggered by those other inputs.
+13. With Standard selected, all calculated results shall remain identical
+    to Story 004's documented behavior (no regression).
 
 ---
 
@@ -302,6 +360,54 @@ Detailed testing conventions are defined in `docs/TESTING.md`.
 
 ---
 
+## Constraints
+
+- Thickness factors (Thin 0.80, Standard 1.00, Thick 1.20) must be defined
+  exactly once as domain configuration (per `docs/ARCHITECTURE.md`'s
+  "Domain Configuration" layer) and referenced from the calculation
+  function; they must not be duplicated as literals in React components,
+  other calculation functions, or test files.
+- The thickness calculation must remain a pure, framework-independent
+  function in the domain layer with no dependency on React, Material UI,
+  or browser APIs, consistent with `docs/ARCHITECTURE.md`.
+- Only the three defined thickness options (Thin, Standard, Thick) may be
+  selected; no custom, continuous, or additional thickness values are in
+  scope (see "Explicitly Out of Scope").
+- Baker's percentages, the recipe formula, and hydration (62%) must not be
+  altered by this story under any thickness selection.
+- The selected thickness's visual indication must use the primary accent
+  color defined in `docs/COLOR_PALETTE.md`, consistent with existing
+  selected-toggle styling already wired through the Material UI theme
+  (`src/theme.ts`); no new raw color values should be introduced.
+- Standard-thickness results must remain numerically identical to Story
+  004's documented behavior, including the canonical six-pizza, 16-inch
+  test case in `docs/PROJECT.md`.
+
+## Edge Cases
+
+- Re-activating the already-selected thickness option (Material UI's
+  exclusive `ToggleButtonGroup` reports `null` on the `onChange` event when
+  the pressed option is already selected) must not deselect the current
+  thickness or leave no option selected.
+- Minimum diameter (10") combined with Thin, and maximum diameter (20")
+  combined with Thick, must each produce a correctly scaled, proportional
+  result (area-based diameter scaling composed with the thickness
+  multiplier).
+- Maximum pizza count (100) combined with Thick must still compute a
+  deterministic, correctly scaled total dough weight and ingredient
+  breakdown.
+- Switching thickness repeatedly (e.g. Thin → Thick → Standard → Thin) must
+  always recompute from the current diameter, pizza count, and thickness
+  inputs; results must not drift or compound based on prior selections.
+- `src/components/PizzaSettings.test.tsx` currently asserts that Thin and
+  Thick are disabled and that Standard is the only enabled/selectable
+  option. That assertion encodes the Story 004 placeholder behavior that
+  `docs/PROJECT.md` explicitly reserved for this story, and is superseded
+  by AC-005-01 and FR-1 above — it is expected to be updated, not
+  preserved, as part of this story's implementation.
+
+---
+
 ## Acceptance Criteria
 
 - **AC-005-01**: Given the application loads, then the Thickness selector
@@ -353,6 +459,20 @@ Detailed testing conventions are defined in `docs/TESTING.md`.
   verifying the Thin, Standard, and Thick factor calculations, that
   Standard preserves existing Story 004 behavior, that scaling is
   proportional, and that baker's percentages remain unchanged.
+- **AC-005-16**: Given a thickness option that is already selected, when
+  the user activates that same option again (including the underlying
+  Material UI exclusive-toggle `null` change event), then the selection
+  remains unchanged and exactly one option continues to be indicated as
+  selected.
+- **AC-005-17**: Given a non-Standard thickness is selected, when the
+  user changes the number of pizzas, then the selected thickness remains
+  selected and continues to be applied to the recalculated results.
+
+## Open Questions
+
+None. The story's formulas, reference examples, acceptance criteria, and
+explicit out-of-scope list resolve the material questions needed for
+implementation.
 
 ## Regression Requirements
 

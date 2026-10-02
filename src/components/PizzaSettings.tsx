@@ -1,4 +1,6 @@
 import Divider from "@mui/material/Divider";
+import type { MouseEvent } from "react";
+import type { Thickness } from "../domain/types";
 import {
   SettingsCard,
   SettingsTitle,
@@ -24,13 +26,11 @@ export const PIZZA_COUNT_MIN = 1;
 export const PIZZA_COUNT_MAX = 100;
 export const PIZZA_COUNT_DEFAULT = 4;
 
-// Thickness selection is reserved for Story 005; "standard" is the only
-// selectable option for this story (see docs/PROJECT.md).
-const THICKNESS = "standard";
-
 type PizzaSettingsProps = {
   diameter: number;
   onDiameterChange: (diameter: number) => void;
+  thickness: Thickness;
+  onThicknessChange: (thickness: Thickness) => void;
   pizzaCount: number;
   onPizzaCountChange: (pizzaCount: number) => void;
 };
@@ -38,11 +38,24 @@ type PizzaSettingsProps = {
 export function PizzaSettings({
   diameter,
   onDiameterChange,
+  thickness,
+  onThicknessChange,
   pizzaCount,
   onPizzaCountChange,
 }: PizzaSettingsProps) {
   const handleDiameterChange = (_event: Event, newValue: number | number[]) => {
     onDiameterChange(Array.isArray(newValue) ? newValue[0] : newValue);
+  };
+
+  const handleThicknessChange = (
+    _event: MouseEvent<HTMLElement>,
+    newValue: Thickness | null,
+  ) => {
+    // MUI's exclusive ToggleButtonGroup reports null when the already-
+    // selected option is pressed again; ignore it to keep a selection.
+    if (newValue !== null) {
+      onThicknessChange(newValue);
+    }
   };
 
   const handleDecrement = () => {
@@ -85,17 +98,14 @@ export function PizzaSettings({
       <Section>
         <SectionLabel variant="h3">Thickness</SectionLabel>
         <ThicknessToggleGroup
-          value={THICKNESS}
+          value={thickness}
           exclusive
+          onChange={handleThicknessChange}
           aria-label="Thickness"
         >
-          <ThicknessOption value="thin" disabled>
-            Thin
-          </ThicknessOption>
+          <ThicknessOption value="thin">Thin</ThicknessOption>
           <ThicknessOption value="standard">Standard</ThicknessOption>
-          <ThicknessOption value="thick" disabled>
-            Thick
-          </ThicknessOption>
+          <ThicknessOption value="thick">Thick</ThicknessOption>
         </ThicknessToggleGroup>
       </Section>
 

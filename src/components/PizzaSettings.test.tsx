@@ -7,16 +7,21 @@ import {
   DIAMETER_DEFAULT,
   PIZZA_COUNT_DEFAULT,
 } from "./PizzaSettings";
+import type { Thickness } from "../domain/types";
+import { DEFAULT_THICKNESS } from "../domain/recipe";
 
 // Test harness mirroring how App lifts and owns this controlled state.
 function ControlledPizzaSettings() {
   const [diameter, setDiameter] = useState(DIAMETER_DEFAULT);
+  const [thickness, setThickness] = useState<Thickness>(DEFAULT_THICKNESS);
   const [pizzaCount, setPizzaCount] = useState(PIZZA_COUNT_DEFAULT);
 
   return (
     <PizzaSettings
       diameter={diameter}
       onDiameterChange={setDiameter}
+      thickness={thickness}
+      onThicknessChange={setThickness}
       pizzaCount={pizzaCount}
       onPizzaCountChange={setPizzaCount}
     />
@@ -93,18 +98,64 @@ describe("<PizzaSettings />", () => {
   });
 
   describe("Thickness", () => {
-    it("renders exactly three options: Thin, Standard, and Thick", () => {
+    it("renders exactly three options: Thin, Standard, and Thick, all enabled", () => {
       render(<ControlledPizzaSettings />);
 
-      expect(screen.getByRole("button", { name: "Thin" })).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Standard" }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Thick" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Thin" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Standard" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Thick" })).toBeEnabled();
     });
 
-    it("indicates Standard as the currently selected option", () => {
+    it("indicates Standard as the currently selected option by default", () => {
       render(<ControlledPizzaSettings />);
+
+      expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      expect(screen.getByRole("button", { name: "Thin" })).toHaveAttribute(
+        "aria-pressed",
+        "false",
+      );
+      expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
+        "aria-pressed",
+        "false",
+      );
+    });
+
+    it("selects Thin and deselects Standard when the Thin option is activated", async () => {
+      const user = userEvent.setup();
+      render(<ControlledPizzaSettings />);
+
+      await user.click(screen.getByRole("button", { name: "Thin" }));
+
+      expect(screen.getByRole("button", { name: "Thin" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
+        "aria-pressed",
+        "false",
+      );
+    });
+
+    it("selects Thick when the Thick option is activated", async () => {
+      const user = userEvent.setup();
+      render(<ControlledPizzaSettings />);
+
+      await user.click(screen.getByRole("button", { name: "Thick" }));
+
+      expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+    });
+
+    it("keeps the currently selected thickness selected when the already-active option is activated again", async () => {
+      const user = userEvent.setup();
+      render(<ControlledPizzaSettings />);
+
+      await user.click(screen.getByRole("button", { name: "Standard" }));
 
       expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
         "aria-pressed",
@@ -112,12 +163,20 @@ describe("<PizzaSettings />", () => {
       );
     });
 
-    it("disables the Thin and Thick options", () => {
+    it("keeps the selected thickness unchanged when the diameter is changed", async () => {
+      const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      expect(screen.getByRole("button", { name: "Thin" })).toBeDisabled();
-      expect(screen.getByRole("button", { name: "Thick" })).toBeDisabled();
-      expect(screen.getByRole("button", { name: "Standard" })).toBeEnabled();
+      await user.click(screen.getByRole("button", { name: "Thick" }));
+
+      const slider = screen.getByRole("slider", { name: "Diameter" });
+      slider.focus();
+      await user.keyboard("{ArrowRight}");
+
+      expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
     });
   });
 
