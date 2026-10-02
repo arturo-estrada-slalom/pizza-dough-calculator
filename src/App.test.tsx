@@ -92,11 +92,22 @@ describe("<App />", () => {
       "aria-pressed",
       "false",
     );
-    // Thick applies a 1.20 factor: 367.5 x 1.20 = 441g dough ball.
+    // Thick applies a 1.20 factor: 367.5 × 1.20 = 441g per ball.
     expect(screen.getByText("441")).toBeInTheDocument();
     expect(screen.getByText('per 14" thick pizza')).toBeInTheDocument();
+    expect(screen.getByText("1764")).toBeInTheDocument();
+    expect(screen.getByText("1036.43")).toBeInTheDocument();
+    expect(screen.getByText("642.59")).toBeInTheDocument();
+    expect(screen.getByText("1036.43 g")).toBeInTheDocument();
+    expect(screen.getByText("642.59 g")).toBeInTheDocument();
+    expect(screen.getByText("4.15 g")).toBeInTheDocument();
+    expect(screen.getByText("25.91 g")).toBeInTheDocument();
+    expect(screen.getByText("20.73 g")).toBeInTheDocument();
+    expect(screen.getByText("34.2 g")).toBeInTheDocument();
     // Baker's percentages and hydration remain unaffected by thickness.
-    expect(screen.getByText("100%")).toBeInTheDocument();
+    for (const percentage of ["100%", "62%", "0.4%", "2.5%", "2.0%", "3.3%"]) {
+      expect(screen.getByText(percentage)).toBeInTheDocument();
+    }
     expect(screen.getByText("62")).toBeInTheDocument();
   });
 });
