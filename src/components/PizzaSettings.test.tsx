@@ -1,11 +1,31 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { PizzaSettings } from "./PizzaSettings";
+import { useState } from "react";
+import {
+  PizzaSettings,
+  DIAMETER_DEFAULT,
+  PIZZA_COUNT_DEFAULT,
+} from "./PizzaSettings";
+
+// Test harness mirroring how App lifts and owns this controlled state.
+function ControlledPizzaSettings() {
+  const [diameter, setDiameter] = useState(DIAMETER_DEFAULT);
+  const [pizzaCount, setPizzaCount] = useState(PIZZA_COUNT_DEFAULT);
+
+  return (
+    <PizzaSettings
+      diameter={diameter}
+      onDiameterChange={setDiameter}
+      pizzaCount={pizzaCount}
+      onPizzaCountChange={setPizzaCount}
+    />
+  );
+}
 
 describe("<PizzaSettings />", () => {
   it("renders the Pizza Settings panel with Diameter, Thickness, and Number of Pizzas sections", () => {
-    render(<PizzaSettings />);
+    render(<ControlledPizzaSettings />);
 
     expect(
       screen.getByRole("heading", { name: "Pizza Settings" }),
@@ -23,7 +43,7 @@ describe("<PizzaSettings />", () => {
 
   describe("Diameter", () => {
     it("defaults to 14 inches and displays the min/max range", () => {
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       const slider = screen.getByRole("slider", { name: "Diameter" });
       expect(slider).toHaveAttribute("aria-valuenow", "14");
@@ -35,7 +55,7 @@ describe("<PizzaSettings />", () => {
 
     it("updates the displayed diameter when the slider value changes via the keyboard", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       const slider = screen.getByRole("slider", { name: "Diameter" });
       slider.focus();
@@ -47,7 +67,7 @@ describe("<PizzaSettings />", () => {
 
     it("does not move the diameter below the minimum of 10", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       const slider = screen.getByRole("slider", { name: "Diameter" });
       slider.focus();
@@ -60,7 +80,7 @@ describe("<PizzaSettings />", () => {
 
     it("does not move the diameter above the maximum of 20", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       const slider = screen.getByRole("slider", { name: "Diameter" });
       slider.focus();
@@ -74,7 +94,7 @@ describe("<PizzaSettings />", () => {
 
   describe("Thickness", () => {
     it("renders exactly three options: Thin, Standard, and Thick", () => {
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       expect(screen.getByRole("button", { name: "Thin" })).toBeInTheDocument();
       expect(
@@ -84,7 +104,7 @@ describe("<PizzaSettings />", () => {
     });
 
     it("indicates Standard as the currently selected option", () => {
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
         "aria-pressed",
@@ -93,7 +113,7 @@ describe("<PizzaSettings />", () => {
     });
 
     it("disables the Thin and Thick options", () => {
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       expect(screen.getByRole("button", { name: "Thin" })).toBeDisabled();
       expect(screen.getByRole("button", { name: "Thick" })).toBeDisabled();
@@ -103,14 +123,14 @@ describe("<PizzaSettings />", () => {
 
   describe("Number of Pizzas", () => {
     it("defaults to 4", () => {
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       expect(screen.getByText("4")).toBeInTheDocument();
     });
 
     it("increases the displayed quantity by one when the increment control is activated", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       await user.click(
         screen.getByRole("button", { name: /increase number of pizzas/i }),
@@ -121,7 +141,7 @@ describe("<PizzaSettings />", () => {
 
     it("decreases the displayed quantity by one when the decrement control is activated", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       await user.click(
         screen.getByRole("button", { name: /decrease number of pizzas/i }),
@@ -132,7 +152,7 @@ describe("<PizzaSettings />", () => {
 
     it("disables the increment control and stops at 100 when the maximum is reached", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       const increment = screen.getByRole("button", {
         name: /increase number of pizzas/i,
@@ -147,7 +167,7 @@ describe("<PizzaSettings />", () => {
 
     it("disables the decrement control and stops at 1 when the minimum is reached", async () => {
       const user = userEvent.setup();
-      render(<PizzaSettings />);
+      render(<ControlledPizzaSettings />);
 
       const decrement = screen.getByRole("button", {
         name: /decrease number of pizzas/i,

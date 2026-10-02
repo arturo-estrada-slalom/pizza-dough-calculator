@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Divider from "@mui/material/Divider";
 import {
   SettingsCard,
@@ -17,32 +16,41 @@ import {
   PizzaCountUnit,
 } from "./PizzaSettings.styled";
 
-const DIAMETER_MIN = 10;
-const DIAMETER_MAX = 20;
-const DIAMETER_DEFAULT = 14;
+export const DIAMETER_MIN = 10;
+export const DIAMETER_MAX = 20;
+export const DIAMETER_DEFAULT = 14;
 
-const PIZZA_COUNT_MIN = 1;
-const PIZZA_COUNT_MAX = 100;
-const PIZZA_COUNT_DEFAULT = 4;
+export const PIZZA_COUNT_MIN = 1;
+export const PIZZA_COUNT_MAX = 100;
+export const PIZZA_COUNT_DEFAULT = 4;
 
 // Thickness selection is reserved for Story 005; "standard" is the only
 // selectable option for this story (see docs/PROJECT.md).
 const THICKNESS = "standard";
 
-export function PizzaSettings() {
-  const [diameter, setDiameter] = useState(DIAMETER_DEFAULT);
-  const [pizzaCount, setPizzaCount] = useState(PIZZA_COUNT_DEFAULT);
+type PizzaSettingsProps = {
+  diameter: number;
+  onDiameterChange: (diameter: number) => void;
+  pizzaCount: number;
+  onPizzaCountChange: (pizzaCount: number) => void;
+};
 
+export function PizzaSettings({
+  diameter,
+  onDiameterChange,
+  pizzaCount,
+  onPizzaCountChange,
+}: PizzaSettingsProps) {
   const handleDiameterChange = (_event: Event, newValue: number | number[]) => {
-    setDiameter(Array.isArray(newValue) ? newValue[0] : newValue);
+    onDiameterChange(Array.isArray(newValue) ? newValue[0] : newValue);
   };
 
   const handleDecrement = () => {
-    setPizzaCount((count) => Math.max(PIZZA_COUNT_MIN, count - 1));
+    onPizzaCountChange(Math.max(PIZZA_COUNT_MIN, pizzaCount - 1));
   };
 
   const handleIncrement = () => {
-    setPizzaCount((count) => Math.min(PIZZA_COUNT_MAX, count + 1));
+    onPizzaCountChange(Math.min(PIZZA_COUNT_MAX, pizzaCount + 1));
   };
 
   return (

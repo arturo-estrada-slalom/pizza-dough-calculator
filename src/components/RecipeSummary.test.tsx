@@ -4,7 +4,13 @@ import { RecipeSummary } from "./RecipeSummary";
 
 describe("<RecipeSummary />", () => {
   it("renders as an accessible region named 'Recipe Summary'", () => {
-    render(<RecipeSummary />);
+    render(
+      <RecipeSummary
+        totalDoughWeightGrams={2880}
+        totalFlourGrams={1692.13}
+        totalWaterGrams={1049.12}
+      />,
+    );
 
     expect(
       screen.getByRole("region", { name: "Recipe Summary" }),
@@ -12,7 +18,13 @@ describe("<RecipeSummary />", () => {
   });
 
   it("renders the four metrics with their values, units, and labels in order", () => {
-    render(<RecipeSummary />);
+    render(
+      <RecipeSummary
+        totalDoughWeightGrams={2880}
+        totalFlourGrams={1692.13}
+        totalWaterGrams={1049.12}
+      />,
+    );
 
     expect(screen.getByText("Total Dough")).toBeInTheDocument();
     expect(screen.getByText("Total Flour")).toBeInTheDocument();
@@ -35,8 +47,14 @@ describe("<RecipeSummary />", () => {
     ]);
   });
 
-  it("displays the Hydration metric as 62%", () => {
-    render(<RecipeSummary />);
+  it("displays the Hydration metric as 62% regardless of the supplied totals", () => {
+    render(
+      <RecipeSummary
+        totalDoughWeightGrams={1470}
+        totalFlourGrams={863.69}
+        totalWaterGrams={535.49}
+      />,
+    );
 
     const hydrationValue = screen.getByText("62").closest("div");
     expect(hydrationValue).toHaveTextContent("62%");

@@ -47,6 +47,12 @@ For each acceptance criterion:
 5. Record PASS, FAIL, or NOT VERIFIED — identified by its
    `AC-<story-number>-<NN>` ID — with supporting evidence.
 
+When relevant to the story, check for separation-of-concerns or
+utility-organization violations against the rules in `docs/ARCHITECTURE.md`
+(domain logic, colocated component-specific helpers, `src/utils/`). Base
+findings on documented standards and meaningful violations — do not reject
+work merely because a hypothetical abstraction could be created.
+
 When verifying visual/color requirements, check colors against
 `docs/COLOR_PALETTE.md` using the two-tier approach defined in
 `docs/TESTING.md` Section 17: first diff the theme's palette tokens

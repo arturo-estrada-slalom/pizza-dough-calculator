@@ -1,4 +1,5 @@
-import { PLACEHOLDER_RESULTS } from "./placeholderResultsData";
+import { HYDRATION_PERCENT_DISPLAY } from "../domain/recipe";
+import { formatWeight } from "../utils/formatWeight";
 import {
   SummaryCard,
   SummaryMetric,
@@ -19,19 +20,23 @@ const METRICS: { label: SummaryMetricLabel; unit: string }[] = [
   { label: "Hydration", unit: "%" },
 ];
 
-export function RecipeSummary() {
-  const {
-    totalDoughWeightGrams,
-    totalFlourGrams,
-    totalWaterGrams,
-    hydrationPercent,
-  } = PLACEHOLDER_RESULTS;
+type RecipeSummaryProps = {
+  totalDoughWeightGrams: number;
+  totalFlourGrams: number;
+  totalWaterGrams: number;
+};
 
-  const values: Record<SummaryMetricLabel, number> = {
-    "Total Dough": totalDoughWeightGrams,
-    "Total Flour": totalFlourGrams,
-    "Total Water": totalWaterGrams,
-    Hydration: hydrationPercent,
+export function RecipeSummary({
+  totalDoughWeightGrams,
+  totalFlourGrams,
+  totalWaterGrams,
+}: RecipeSummaryProps) {
+  const values: Record<SummaryMetricLabel, string> = {
+    "Total Dough": formatWeight(totalDoughWeightGrams),
+    "Total Flour": formatWeight(totalFlourGrams),
+    "Total Water": formatWeight(totalWaterGrams),
+    // Hydration is fixed by the recipe formula, independent of inputs.
+    Hydration: HYDRATION_PERCENT_DISPLAY,
   };
 
   return (
