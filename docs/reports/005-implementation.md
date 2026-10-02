@@ -121,7 +121,7 @@ six-pizza reference case.
   thickness calculation remains a pure domain function, and the
   thickness factors have a single source of truth in
   `src/domain/recipe.ts`.
-- This implementation has not been independently verified by QA.
+- Independent QA verification is recorded in the QA Verification History below.
 
 ## QA Verification History
 
