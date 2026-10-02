@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready for QA
+Verified
 
 ## Implementation Summary
 
@@ -145,3 +145,82 @@ All of AC-004-01 through AC-004-16 are addressed:
   against the running application, and confirm rounding/display behavior
   reads correctly across the diameter range (10"–20") and pizza-count
   range (1–100).
+
+## QA Verification History
+
+### Attempt 1 — PASS
+
+**Result:** PASS
+
+**Acceptance criteria verified:** AC-004-01, AC-004-02, AC-004-03,
+AC-004-04, AC-004-05, AC-004-06, AC-004-07, AC-004-08, AC-004-09,
+AC-004-10, AC-004-11, AC-004-12, AC-004-13, AC-004-14, AC-004-15,
+AC-004-16.
+
+**Acceptance criteria failed or not verified:** None.
+
+**Verification commands executed:**
+
+- `npm run test:run` — 10 test files, 62 tests passed.
+- `npm run lint` — no errors.
+- `npm run build` (`tsc -b && vite build`) — no type errors, build
+  succeeded.
+- `npm run test:e2e` — 7 Playwright tests passed.
+
+**Manual/inspection verification performed:**
+
+- Independently recomputed the formula by hand against
+  `src/domain/doughCalculator.ts` and `src/domain/recipeCalculator.ts`:
+  confirmed `doughBallWeight = 480 × (d/16)²` for d = 10, 14, 16, 20
+  (187.5, 367.5, 480, 750) and the canonical 6×16" case (2880 g total →
+  flour ≈1692.13 g, water ≈1049.12 g, yeast ≈6.77 g, salt ≈42.30 g, sugar
+  ≈33.84 g, olive oil ≈55.84 g) — matches `recipeCalculator.test.ts` and
+  `doughCalculator.test.ts` assertions (AC-004-01–06, 14).
+- Confirmed `REFERENCE_PIZZA` and `RECIPE_INGREDIENTS`/
+  `TOTAL_BAKERS_PERCENTAGE` are defined exactly once in
+  `src/domain/recipe.ts` and imported by `doughCalculator.ts`,
+  `recipeCalculator.ts`, `RecipeSummary.tsx`, and `Ingredients.tsx` — no
+  duplicated constants in component code (AC-004-15).
+- Confirmed `src/domain/doughCalculator.ts` and `recipeCalculator.ts`
+  have no React/MUI imports and are tested as plain function calls with
+  no rendering (AC-004-13).
+- Confirmed `App.tsx` owns the single `diameter`/`pizzaCount` state via
+  `useState`, passed as controlled props to both `PizzaSettings` and the
+  three result components — no independent/duplicated copy of these
+  values exists (AC-004-16).
+- Confirmed `RecipeSummary.tsx` renders `HYDRATION_PERCENT_DISPLAY`
+  (fixed "62") independent of the supplied totals, and
+  `RecipeSummary.test.tsx` exercises this with a differing set of totals
+  (AC-004-08).
+- Confirmed `Ingredients.tsx` renders `ingredient.bakersPercentageDisplay`
+  (the fixed recipe percentages) rather than any derived/calculated
+  percentage (AC-004-11).
+- Confirmed `PizzaSettings.tsx` still renders Thin/Thick as `disabled`
+  ToggleButtons with Standard as the only selectable option, and that no
+  thickness-factor calculation exists anywhere in the domain layer
+  (AC-004-12).
+- Confirmed `package.json` added no new runtime dependency; only the
+  previously-approved `@mui/material`, `@emotion/react`,
+  `@emotion/styled`, `react`, `react-dom` are present (AC-004-14,
+  constraint).
+- Reviewed `App.test.tsx`: verifies default-settings render (367.5 g),
+  diameter+pizza-count change reaching the canonical 480 g / ×6 / 2880 g
+  / 1692.13 g / 1049.12 g / 6.77 g values, pizza-count-only change
+  leaving dough-ball weight unchanged at 367.5 g, and the disabled
+  Thickness control having no effect — covers AC-004-07, 09, 10, 12.
+- Noted a minor inaccuracy in this report's "Files Changed" section: it
+  lists `src/components/formatWeight.ts` /
+  `src/components/formatWeight.test.ts`, but the actual files are at
+  `src/utils/formatWeight.ts` / `src/utils/formatWeight.test.ts`. This is
+  the architecturally correct location per `docs/ARCHITECTURE.md`'s
+  utility/helper decision rule, since `formatWeight` is reused by
+  `DoughBallResult`, `RecipeSummary`, and `Ingredients` (genuinely
+  reusable, not component-specific) — not a defect, just a report
+  documentation discrepancy for the record.
+
+**Findings:** No defects found. Domain calculations, component wiring,
+and tests match the story's functional requirements and acceptance
+criteria. Architecture boundaries (presentation → domain → domain
+configuration) are respected; recipe/reference constants have a single
+source of truth; no new runtime dependency was introduced; Thin/Thick
+remain correctly non-functional per scope.
