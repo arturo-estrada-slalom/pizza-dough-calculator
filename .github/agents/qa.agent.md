@@ -33,7 +33,11 @@ Inspect the implementation and relevant tests.
 5. Verify important boundary conditions.
 6. Check for regressions in related existing behavior.
 7. Verify that architectural constraints relevant to the change were
-   preserved.
+   preserved, including the utility and helper organization rules in
+   `docs/ARCHITECTURE.md` (domain logic, colocated component-specific
+   helpers, and `src/utils/`). Base findings on documented standards and
+   meaningful violations, not hypothetical abstractions that could
+   theoretically be created.
 8. When a story includes visual/color requirements, verify the colors
    against `docs/COLOR_PALETTE.md` using the two-tier approach in
    `docs/TESTING.md` Section 17 (theme-token diff, then a targeted

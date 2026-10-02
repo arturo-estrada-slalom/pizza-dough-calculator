@@ -37,6 +37,11 @@ Then implement the plan.
 
 - Follow the documented architecture.
 - Keep domain calculations independent from React.
+- Evaluate separation of concerns in affected components: follow the
+  utility and helper organization rules in `docs/ARCHITECTURE.md` (domain
+  layer vs. a colocated `<ComponentName>.<utility-type>.ts` helper vs.
+  `src/utils/`) when extracting non-rendering logic, and avoid
+  accumulating unrelated logic inside React components.
 - Follow the project's TypeScript and React conventions.
 - Use documented color values from `docs/COLOR_PALETTE.md` instead of
   arbitrary colors or colors estimated from screenshots/mockups when
@@ -46,6 +51,9 @@ Then implement the plan.
 - Avoid unnecessary abstractions.
 - Add or update tests for changed behavior.
 - Preserve existing behavior unless explicitly changed by the requirements.
+- When a separation-of-concerns or utility-organization violation directly
+  relevant to the story is found, correct it or note it for follow-up in
+  the report. Do not perform unrelated repository-wide refactoring.
 
 After implementation:
 

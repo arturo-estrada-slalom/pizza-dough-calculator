@@ -22,6 +22,12 @@ Then implement the approved story.
 
 Follow the project's architecture, coding standards, and testing guidelines.
 
+When extracting non-rendering logic from a component, follow the utility and
+helper organization rules in `docs/ARCHITECTURE.md` (domain layer vs. a
+colocated `<ComponentName>.<utility-type>.ts` helper vs. `src/utils/`). If a
+directly relevant violation already exists in code the story touches, fix or
+note it rather than performing unrelated repository-wide refactoring.
+
 When the story includes visual/UI requirements, use documented color values
 from `docs/COLOR_PALETTE.md` rather than approximating colors from design
 mockups or screenshots.

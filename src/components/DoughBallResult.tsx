@@ -1,4 +1,4 @@
-import { PLACEHOLDER_RESULTS } from "./placeholderResultsData";
+import { formatWeight } from "../utils/formatWeight";
 import {
   DoughBallCard,
   DoughBallHeader,
@@ -9,10 +9,17 @@ import {
   DoughBallContext,
 } from "./DoughBallResult.styled";
 
-export function DoughBallResult() {
-  const { doughBallWeightGrams, pizzaCount, pizzaContext } =
-    PLACEHOLDER_RESULTS;
+type DoughBallResultProps = {
+  doughBallWeightGrams: number;
+  diameter: number;
+  pizzaCount: number;
+};
 
+export function DoughBallResult({
+  doughBallWeightGrams,
+  diameter,
+  pizzaCount,
+}: DoughBallResultProps) {
   return (
     <DoughBallCard aria-label="Dough Ball result">
       <DoughBallHeader>
@@ -22,10 +29,12 @@ export function DoughBallResult() {
         </PizzaCountChip>
       </DoughBallHeader>
       <DoughBallWeightRow>
-        <DoughBallWeightNumber>{doughBallWeightGrams}</DoughBallWeightNumber>
+        <DoughBallWeightNumber>
+          {formatWeight(doughBallWeightGrams)}
+        </DoughBallWeightNumber>
         <span className="unit">g</span>
       </DoughBallWeightRow>
-      <DoughBallContext>{pizzaContext}</DoughBallContext>
+      <DoughBallContext>per {diameter}" standard pizza</DoughBallContext>
     </DoughBallCard>
   );
 }

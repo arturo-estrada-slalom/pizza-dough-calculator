@@ -26,9 +26,10 @@ implementing, reviewing, or testing changes.
 - Implementation agents must follow `docs/ARCHITECTURE.md` when adding or
   changing functionality — keeping domain logic out of React components,
   preserving the presentation → domain → domain configuration dependency
-  direction, and maintaining a single source of truth for recipe/reference
-  constants — in addition to `docs/PROJECT.md` and
-  `docs/CODING_STANDARDS.md`.
+  direction, following its utility and helper organization rules (domain
+  layer vs. colocated component-specific helpers vs. `src/utils/`), and
+  maintaining a single source of truth for recipe/reference constants — in
+  addition to `docs/PROJECT.md` and `docs/CODING_STANDARDS.md`.
 - Implementation agents must use `docs/COLOR_PALETTE.md` as the source of
   truth for color values when implementing or styling UI, rather than
   colors estimated from design mockups or screenshots, and apply them

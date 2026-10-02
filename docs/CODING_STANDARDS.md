@@ -120,15 +120,28 @@ once a test framework is configured (see `docs/PROJECT.md`).
 - Group domain/calculation code under a clearly named location (e.g.
   `src/domain/`) separate from `src/components/`, so the logic is easy to
   find and unit-test once a test framework is added.
+- When non-rendering logic needs to come out of a component, decide where it
+  belongs using the decision rule and categories (domain layer, colocated
+  component-specific helper, or `src/utils/`) defined in
+  `docs/ARCHITECTURE.md` ("Utility and Helper Organization"). That document
+  is authoritative for this decision — do not duplicate its rule here.
 
 ## 6. File & Directory Organization
 
 - Keep the flat `src/` layout used today until complexity genuinely
   requires more structure. As components and domain logic are added,
   organize into clear top-level folders, for example:
-  - `src/components/` — presentational React components
+  - `src/components/` — presentational React components, plus any
+    component-specific `<ComponentName>.<utility-type>.ts` helpers
+    colocated with the component they support
   - `src/domain/` — pure calculation functions, types, and constants
+  - `src/utils/` — reusable, general-purpose, presentation-agnostic
+    utilities (added only once genuine reuse exists; see
+    `docs/ARCHITECTURE.md`)
   - `src/` root — `App.tsx`, `main.tsx`, global styles
+- Business/domain behavior must stay in `src/domain/`. Never place it in
+  `src/utils/` or a component — `src/utils/` is for reusable technical
+  helpers, not business logic (see `docs/ARCHITECTURE.md`).
 - Do not create deeply nested folder hierarchies (feature folders,
   atomic-design layers, barrel-file trees) for an app this size.
 - Avoid barrel files (`index.ts` re-export hubs) unless a directory has

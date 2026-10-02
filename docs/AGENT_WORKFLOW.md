@@ -184,17 +184,27 @@ Before modifying code, the Implementation Agent should:
 3. Inspect the existing implementation.
 4. Identify affected files and components.
 5. Determine the smallest appropriate technical approach.
-6. Consider existing tests and required new tests.
+6. Evaluate separation of concerns in affected components, following the
+   utility and helper organization rules in `docs/ARCHITECTURE.md` (domain
+   layer vs. colocated component-specific helpers vs. `src/utils/`).
+7. Consider existing tests and required new tests.
 
 The agent should then:
 
 1. Implement the requested behavior.
-2. Follow the documented architecture.
+2. Follow the documented architecture, including its utility and helper
+   organization rules, when extracting non-rendering logic from a
+   component.
 3. Follow coding standards.
 4. Add or update tests as required.
 5. Run the relevant automated tests.
 6. Run linting or other configured verification tools when appropriate.
 7. Report what was changed.
+
+When a directly relevant separation-of-concerns or utility-organization
+violation is discovered in code the story is already touching, address it or
+note it in the report. Do not expand the change into an unrelated
+repository-wide refactoring.
 
 ## Expected Output
 
@@ -253,7 +263,11 @@ The QA Agent should:
 6. Execute the relevant automated test suite.
 7. Check important edge cases.
 8. Identify potential regressions.
-9. Report results against the acceptance criteria.
+9. Identify separation-of-concerns or utility-organization violations
+   introduced by, or directly relevant to, the change, measured against the
+   documented rules in `docs/ARCHITECTURE.md` — not hypothetical
+   abstractions that could theoretically be created.
+10. Report results against the acceptance criteria.
 
 ## Expected Output
 

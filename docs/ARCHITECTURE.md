@@ -80,7 +80,9 @@ Typical application state includes:
 The presentation layer must not implement pizza geometry, baker's percentage
 calculations, or recipe scaling logic.
 
-React components should consume results produced by the domain layer.
+React components should consume results produced by the domain layer. See
+"Utility and Helper Organization" below for how to handle component-specific
+or reusable supporting logic that is not domain behavior.
 
 ### Visual Design and Color Source of Truth
 
@@ -158,6 +160,115 @@ specific recipe being calculated.
 
 ---
 
+## Utility and Helper Organization
+
+Non-rendering supporting logic in this project falls into three distinct
+categories, and they must not be mixed:
+
+1. **Component-specific supporting logic** — validators, mappers,
+   formatters, transformers, or other small helpers that exist for one
+   component or feature and are not meaningfully reusable elsewhere.
+2. **Reusable, general-purpose utilities** — generic, presentation-agnostic
+   technical helpers that are used by, or clearly reusable across, multiple
+   unrelated components or areas of the application.
+3. **Domain/business logic** — the pizza geometry, dough-ball, baker's
+   percentage, recipe-scaling, and thickness-factor behavior described
+   above, which belongs exclusively in the Domain Layer.
+
+### Decision Rule
+
+When extracting non-rendering logic out of a component, apply this rule:
+
+```text
+Does the logic represent business/domain behavior?
+    YES -> Domain Layer (src/domain/)
+
+    NO
+    │
+    ▼
+Is the logic specific to one component or feature?
+    YES -> Colocate with that component
+           <ComponentName>.<utility-type>.ts
+
+    NO
+    │
+    ▼
+Is it genuinely reusable/general-purpose?
+    YES -> src/utils/
+```
+
+Do not create abstractions solely for hypothetical future reuse. Prefer
+colocation until genuine reuse, or clearly general applicability, exists.
+
+### Component-Specific Logic
+
+Supporting logic tightly coupled to a single component's responsibility
+(component-specific validators, mappers, formatters, transformers, and
+similar small helpers) should remain colocated with that component.
+
+When such logic is extracted into its own file, name it:
+
+    <ComponentName>.<utility-type>.ts
+
+using a descriptive utility type such as `helper`, `validator`, `mapper`,
+`formatter`, or `transformer`. For example:
+
+    PizzaSettings.validator.ts
+    PizzaSettings.mapper.ts
+    RecipeResults.helper.ts
+
+Do not extract trivial logic into a separate file merely to satisfy this
+naming convention — extraction should improve readability, testability, or
+separation of concerns.
+
+### Reusable Utilities (`src/utils/`)
+
+Logic that is generic enough to be reused by multiple unrelated components
+or areas of the application belongs under `src/utils/` (for example,
+`src/utils/formatWeight.ts`, `src/utils/clamp.ts`).
+
+Utilities under `src/utils/` should:
+
+- Be independent of individual React components.
+- Have a clear, focused responsibility.
+- Prefer pure functions where practical.
+- Avoid dependencies on presentation components.
+- Be reusable without importing component-specific implementation details.
+
+Do not move a helper into `src/utils/` merely because it could theoretically
+be reused someday — prefer colocation until genuine reuse or clear general
+applicability exists.
+
+### Domain Logic Is Not Utility Logic
+
+Business/domain behavior (pizza geometry, dough-ball calculations, baker's
+percentage calculations, recipe scaling, thickness factors, and similar
+rules) must remain in the Domain Layer (`src/domain/`). `src/utils/` is for
+reusable technical/supporting functions, not a generic location for business
+logic. Moving domain behavior into `src/utils/`, or into a component,
+violates the dependency direction and layer boundaries defined by this
+document.
+
+### Keeping Components Focused
+
+React components should primarily be responsible for presentation,
+interaction, and composition. When a component file accumulates
+non-rendering logic that obscures that responsibility, evaluate whether the
+logic should be:
+
+- Moved into the Domain Layer, if it represents business behavior.
+- Extracted into a colocated `<ComponentName>.<utility-type>.ts` file, if it
+  is component-specific.
+- Moved into `src/utils/`, if it is genuinely generic and reusable.
+
+There is no file-size threshold that triggers extraction. Base the decision
+on responsibility and cohesion, not line count.
+
+`docs/CODING_STANDARDS.md` references this section rather than duplicating
+the decision rule.
+
+---
+
 ## Suggested Project Structure
 
 The exact structure may evolve as requirements change, but the project should
@@ -175,6 +286,9 @@ src/
 │   ├── recipe.ts
 │   └── types.ts
 │
+├── utils/
+│   └── formatWeight.ts
+│
 ├── test/
 │   └── setup.ts
 │
@@ -183,7 +297,9 @@ src/
 ```
 
 Do not create directories or abstractions solely to match this example.
-Structure should reflect actual application needs.
+Structure should reflect actual application needs. In particular, do not
+create `src/utils/` preemptively — add it only once a genuinely reusable
+utility exists (see "Utility and Helper Organization" above).
 
 ---
 
@@ -255,6 +371,9 @@ When modifying the application:
 8. Do not add architectural layers without a concrete need.
 9. Follow `docs/CODING_STANDARDS.md` for implementation conventions.
 10. Follow `docs/TESTING.md` for testing conventions.
+11. Apply the "Utility and Helper Organization" decision rule above when
+    extracting non-rendering logic from a component, instead of leaving it
+    inline or guessing where it belongs.
 
 When a proposed solution can be implemented cleanly within the existing
 architecture, prefer that solution over introducing a new architectural

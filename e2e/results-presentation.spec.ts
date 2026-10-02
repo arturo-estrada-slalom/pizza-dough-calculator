@@ -15,7 +15,9 @@ test("renders the Dough Ball card in the documented dark-surface and warm-gold c
     );
     expect(cardBackground).toBe("rgb(44, 31, 20)");
 
-    const weightValue = page.getByText("480", { exact: true });
+    // Default Pizza Settings (14", 4 pizzas) yield a 367.5g dough ball
+    // (docs/PROJECT.md).
+    const weightValue = page.getByText("367.5", { exact: true });
     const weightColor = await weightValue.evaluate(
         (el) => getComputedStyle(el).color,
     );
