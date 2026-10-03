@@ -47,6 +47,13 @@ For each acceptance criterion:
 5. Record PASS, FAIL, or NOT VERIFIED — identified by its
    `AC-<story-number>-<NN>` ID — with supporting evidence.
 
+Independently of the acceptance-criteria results, verify that appropriate
+automated E2E (Playwright) regression coverage exists for the meaningful
+observable behavior the story introduces or changes, per `docs/TESTING.md`'s
+"E2E Regression Coverage Requirement". If required coverage is missing or
+insufficient, this is itself a FAIL finding — see "Missing E2E Regression
+Coverage" below — even if every acceptance criterion otherwise passes.
+
 When relevant to the story, check for separation-of-concerns or
 utility-organization violations against the rules in `docs/ARCHITECTURE.md`
 (domain logic, colocated component-specific helpers, `src/utils/`). Base
@@ -64,6 +71,22 @@ Run the project's configured automated test suite and other relevant
 verification commands.
 
 Do not modify production code or silently repair defects.
+
+## Missing E2E Regression Coverage
+
+If required E2E regression coverage per `docs/TESTING.md` is missing or
+insufficient for meaningful observable behavior the story introduces or
+changes:
+
+1. Document the missing or insufficient coverage in the implementation
+   report.
+2. Identify the specific acceptance criteria or observable behavior that
+   lacks regression protection.
+3. Mark the overall QA attempt FAIL.
+4. Change the story status to `Implementation Required`.
+
+Do not add the missing E2E tests yourself — test implementation remains the
+Implementation Agent's responsibility.
 
 If a defect is discovered, report:
 

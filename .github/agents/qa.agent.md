@@ -43,7 +43,12 @@ Inspect the implementation and relevant tests.
    `docs/TESTING.md` Section 17 (theme-token diff, then a targeted
    Playwright spot-check under `e2e/` if the story requires one) rather
    than approximating them from screenshots or mockups.
-9. Report defects without silently repairing them.
+9. Verify that appropriate automated E2E (Playwright) regression coverage
+   exists for the meaningful observable behavior the story introduces or
+   changes, per `docs/TESTING.md` ("E2E Regression Coverage
+   Requirement"). Evaluate this independently of whether the acceptance
+   criteria otherwise pass.
+10. Report defects without silently repairing them.
 
 ## QA Report
 
@@ -112,5 +117,9 @@ Do not:
 - Weaken tests to make an implementation pass.
 - Treat the Implementation Agent's report as proof of correctness.
 - Mark behavior PASS when it was not verified.
+- Add missing E2E regression tests yourself. Test implementation remains
+  the Implementation Agent's responsibility; if required E2E coverage per
+  `docs/TESTING.md` is missing or insufficient, report it as a defect and
+  mark the overall status FAIL rather than adding or fixing the tests.
 
 If verification cannot be completed, report BLOCKED and explain why.

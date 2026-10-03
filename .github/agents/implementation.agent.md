@@ -50,6 +50,11 @@ Then implement the plan.
 - Reuse existing abstractions where appropriate.
 - Avoid unnecessary abstractions.
 - Add or update tests for changed behavior.
+- Identify meaningful observable behavior introduced or changed by the
+  story and add or update Playwright E2E regression coverage for it, per
+  `docs/TESTING.md` ("E2E Regression Coverage Requirement"). Preserve
+  existing E2E tests unless the story's requirements intentionally change
+  the behavior they verify.
 - Preserve existing behavior unless explicitly changed by the requirements.
 - When a separation-of-concerns or utility-organization violation directly
   relevant to the story is found, correct it or note it for follow-up in
@@ -57,10 +62,14 @@ Then implement the plan.
 
 After implementation:
 
-1. Run the relevant test suite.
+1. Run the relevant test suite, including the Playwright E2E suite
+   (`npm run test:e2e`) when E2E tests were added or modified.
 2. Run configured linting/type checking where applicable.
 3. Correct implementation failures discovered during development.
 4. Summarize the completed work.
+
+Do not move the story to `Ready for QA` if required E2E regression coverage
+(per `docs/TESTING.md`) is missing.
 
 ## Final Report
 
@@ -76,7 +85,8 @@ Files created or modified and their purpose.
 
 ### Tests
 
-Tests created or modified.
+Tests created or modified, including any Playwright E2E regression tests
+added or updated per `docs/TESTING.md`.
 
 ### Verification
 
