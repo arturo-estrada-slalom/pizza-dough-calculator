@@ -16,7 +16,10 @@ Before modifying code:
 2. Review the approved requirements and acceptance criteria.
 3. Identify the smallest change that satisfies the story.
 4. Produce a concise technical implementation plan.
-5. Identify the tests that must be created or updated.
+5. Identify the tests that must be created or updated, including any
+   Playwright E2E regression tests required by `docs/TESTING.md`'s "E2E
+   Regression Coverage Requirement" for meaningful observable behavior the
+   story introduces or changes.
 
 Then implement the approved story.
 
@@ -36,11 +39,13 @@ Do not expand the scope beyond the approved requirements.
 
 After implementation:
 
-- Run the relevant automated tests.
+- Run the relevant automated tests, including the Playwright E2E suite
+  (`npm run test:e2e`) when E2E tests were added or modified.
 - Run configured linting and type checking where applicable.
 - Report the files changed.
 - Summarize the implementation.
-- Report tests added or modified.
+- Report tests added or modified, including any Playwright E2E regression
+  tests and their results.
 - Report verification commands and their results.
 - Identify any remaining concerns for QA.
 
@@ -97,6 +102,27 @@ questions have been resolved.
 `Implementation Required` is the exception used when QA has returned a story
 for defect correction.
 
+## Mandatory E2E Regression Coverage Gate
+
+Every story that changes or introduces observable application behavior must
+include appropriate automated E2E regression coverage before it can move to
+`Ready for QA`, per `docs/TESTING.md`'s "E2E Regression Coverage
+Requirement". Manual or one-time verification does not satisfy this
+requirement.
+
+Before moving a story to `Ready for QA`:
+
+1. Identify the meaningful observable behavior the story introduced or
+   changed.
+2. Confirm Playwright E2E coverage exists for that behavior under `e2e/`,
+   adding or updating it as needed.
+3. Confirm existing E2E tests were preserved unless the story intentionally
+   changed the behavior they verify.
+4. Run `npm run test:e2e` and confirm it passes.
+
+Do not move a story to `Ready for QA` while required E2E regression
+coverage is missing or failing.
+
 ## Status Transitions
 
 When implementation work begins on an eligible story, change its status to:
@@ -127,7 +153,8 @@ It must contain:
 - Implementation summary
 - Files created, modified, or deleted
 - Purpose of each file change
-- Tests created or modified
+- Tests created or modified, including Playwright E2E regression tests
+  added or updated
 - Verification commands executed
 - Verification results
 - Acceptance criteria addressed

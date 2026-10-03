@@ -36,9 +36,16 @@ implementing, reviewing, or testing changes.
   through a single theme/token mechanism per `docs/CODING_STANDARDS.md`.
 - Implementation agents must follow `docs/TESTING.md` when adding or
   changing functionality, in addition to `docs/PROJECT.md` and
-  `docs/CODING_STANDARDS.md`.
+  `docs/CODING_STANDARDS.md`. This includes `docs/TESTING.md`'s "E2E
+  Regression Coverage Requirement": every story that changes or
+  introduces observable application behavior must leave behind automated
+  Playwright E2E regression coverage, and a story must not move to
+  `Ready for QA` while required coverage is missing.
 - QA/testing agents must consult `docs/TESTING.md` before creating,
-  modifying, or executing tests.
+  modifying, or executing tests, and must independently verify that
+  required E2E regression coverage exists per that policy — treating
+  missing or insufficient coverage as a FAIL finding rather than adding
+  the missing tests themselves.
 - QA/testing agents must verify visual/color requirements against
   `docs/COLOR_PALETTE.md` rather than approximating colors from
   screenshots or mockups.
