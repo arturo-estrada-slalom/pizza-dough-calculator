@@ -188,6 +188,10 @@ Before modifying code, the Implementation Agent should:
    utility and helper organization rules in `docs/ARCHITECTURE.md` (domain
    layer vs. colocated component-specific helpers vs. `src/utils/`).
 7. Consider existing tests and required new tests.
+8. Identify meaningful observable behavior introduced or changed by the
+   story that must be protected by automated E2E regression coverage, per
+   the policy in `docs/TESTING.md` ("E2E Regression Coverage
+   Requirement").
 
 The agent should then:
 
@@ -196,8 +200,10 @@ The agent should then:
    organization rules, when extracting non-rendering logic from a
    component.
 3. Follow coding standards.
-4. Add or update tests as required.
-5. Run the relevant automated tests.
+4. Add or update tests as required, including Playwright E2E regression
+   tests for the observable behavior identified in step 8 above.
+5. Run the relevant automated tests, including the Playwright E2E suite
+   when E2E tests were added or modified.
 6. Run linting or other configured verification tools when appropriate.
 7. Report what was changed.
 
@@ -205,6 +211,31 @@ When a directly relevant separation-of-concerns or utility-organization
 violation is discovered in code the story is already touching, address it or
 note it in the report. Do not expand the change into an unrelated
 repository-wide refactoring.
+
+## E2E Regression Coverage Requirement
+
+Every story that changes or introduces observable application behavior must
+include appropriate automated E2E regression coverage before it is
+considered complete. Manual or one-time verification does not replace
+persistent automated E2E coverage. The authoritative policy — what counts as
+observable behavior, what should and should not be covered, and where tests
+live — is defined in `docs/TESTING.md` ("E2E Regression Coverage
+Requirement"); this document defines how that policy is enforced in the
+workflow.
+
+The Implementation Agent must:
+
+- Add or update Playwright E2E tests for meaningful observable behavior the
+  story introduces or changes, per `docs/TESTING.md`.
+- Preserve existing E2E tests unless the story's requirements intentionally
+  change the behavior a test verifies.
+- Run the relevant E2E suite (`npm run test:e2e`) before moving the story to
+  `Ready for QA`.
+- Record, in the implementation report, which E2E tests were added or
+  modified and their results.
+
+The Implementation Agent must NOT move a story to `Ready for QA` if required
+E2E regression coverage is missing.
 
 ## Expected Output
 
@@ -220,7 +251,8 @@ After implementation, the agent should summarize:
 
 - Files changed.
 - Behavior implemented.
-- Tests added or modified.
+- Tests added or modified, including any Playwright E2E regression tests
+  (per `docs/TESTING.md`) and their results.
 - Verification commands executed.
 - Any remaining concerns.
 
@@ -235,6 +267,8 @@ The Implementation Agent must NOT:
 - Violate documented architectural boundaries.
 - Modify functionality reserved for a future task.
 - Declare its own implementation independently verified.
+- Move a story to `Ready for QA` while required E2E regression coverage
+  (per `docs/TESTING.md`) is missing or insufficient.
 
 Passing tests during implementation does not replace independent QA review.
 
@@ -267,7 +301,12 @@ The QA Agent should:
    introduced by, or directly relevant to, the change, measured against the
    documented rules in `docs/ARCHITECTURE.md` — not hypothetical
    abstractions that could theoretically be created.
-10. Report results against the acceptance criteria.
+10. Verify that appropriate automated E2E regression coverage exists for the
+    meaningful observable behavior the story introduces or changes, per the
+    policy in `docs/TESTING.md` ("E2E Regression Coverage Requirement").
+    This is evaluated independently of whether the acceptance criteria
+    otherwise pass.
+11. Report results against the acceptance criteria.
 
 ## Expected Output
 
@@ -319,9 +358,26 @@ The QA Agent must NOT:
 - Weaken tests to accommodate incorrect behavior.
 - Treat the Implementation Agent's claims as proof of correctness.
 - Mark unverified behavior as passing.
+- Add missing E2E regression tests itself. Test implementation remains the
+  Implementation Agent's responsibility; missing or insufficient required
+  E2E coverage is reported as a defect (see below), not silently fixed.
 
 When a defect is found, report it for implementation rather than silently
 repairing it.
+
+## Missing E2E Regression Coverage
+
+If required E2E regression coverage (per `docs/TESTING.md`) is missing or
+insufficient for meaningful observable behavior the story introduces or
+changes, the QA Agent must treat this as a finding, even if all acceptance
+criteria otherwise pass:
+
+1. Document the missing or insufficient coverage in the implementation
+   report.
+2. Identify the specific acceptance criteria or observable behavior that
+   lacks regression protection.
+3. Mark the QA attempt as FAIL.
+4. Change the story status to `Implementation Required`.
 
 ---
 
