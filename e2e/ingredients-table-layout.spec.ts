@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page, type Locator } from "@playwright/test";
 
 // Regression coverage for the mobile Ingredients table layout defect
 // (docs/stories/006-fix-mobile-ingredient-table-layout.md): calculated
@@ -14,6 +14,62 @@ async function expectSingleLine(page: Page, text: string) {
     const lineCount = await element.evaluate((el) => el.getClientRects().length);
     expect(lineCount).toBe(1);
 }
+
+// Containment check per docs/TESTING.md Section 17: an element's bounding
+// rect must stay within its containing element's bounds. Used to confirm a
+// column's header/data isn't clipped outside the visible, unscrolled table
+// container (the specific gap in E2E coverage identified by QA).
+async function expectContainedWithin(child: Locator, container: Locator) {
+    const [childBox, containerBox] = await Promise.all([
+        child.boundingBox(),
+        container.boundingBox(),
+    ]);
+    expect(childBox).not.toBeNull();
+    expect(containerBox).not.toBeNull();
+    const epsilon = 1;
+    expect(childBox!.x).toBeGreaterThanOrEqual(containerBox!.x - epsilon);
+    expect(childBox!.y).toBeGreaterThanOrEqual(containerBox!.y - epsilon);
+    expect(childBox!.x + childBox!.width).toBeLessThanOrEqual(
+        containerBox!.x + containerBox!.width + epsilon,
+    );
+    expect(childBox!.y + childBox!.height).toBeLessThanOrEqual(
+        containerBox!.y + containerBox!.height + epsilon,
+    );
+}
+
+test("fits the Ingredients table within its card at the 320px minimum width with default settings, with no column clipped", async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.goto("/");
+
+    // Default settings (14", standard, 4 pizzas) must not require the
+    // contained-scroll fallback at all: the table should fit its card
+    // without any horizontal overflow.
+    const tableContainer = page
+        .getByRole("table", { name: "Ingredients" })
+        .locator("xpath=..");
+    const overflow = await tableContainer.evaluate(
+        (el) => el.scrollWidth - el.clientWidth,
+    );
+    expect(overflow).toBe(0);
+
+    // No header or data cell is clipped outside the (unscrolled) container.
+    const table = page.getByRole("table", { name: "Ingredients" });
+    for (const name of ["Ingredient", "Weight", "Baker's %"]) {
+        await expectContainedWithin(
+            table.getByText(name, { exact: true }),
+            tableContainer,
+        );
+    }
+    await expectContainedWithin(table.getByText("100%", { exact: true }), tableContainer);
+
+    // No page-level horizontal scrolling.
+    const scrollWidth = await page.evaluate(
+        () => document.documentElement.scrollWidth,
+    );
+    expect(scrollWidth).toBeLessThanOrEqual(320);
+});
 
 test("keeps ingredient weights and Total Dough on one line and the table structurally intact at the 320px minimum width", async ({
     page,
@@ -42,11 +98,22 @@ test("keeps ingredient weights and Total Dough on one line and the table structu
     await expectSingleLine(page, "14.75 g");
     await expectSingleLine(page, "760.5 g");
 
-    // Three distinct columns remain, headers stay aligned with their data.
+    // Three distinct columns remain, headers stay aligned with their data,
+    // and none of them is clipped outside the (unscrolled) table container.
     const table = page.getByRole("table", { name: "Ingredients" });
-    await expect(table.getByText("Ingredient", { exact: true })).toBeVisible();
-    await expect(table.getByText("Weight", { exact: true })).toBeVisible();
-    await expect(table.getByText("Baker's %", { exact: true })).toBeVisible();
+    const tableContainer = table.locator("xpath=..");
+    for (const name of ["Ingredient", "Weight", "Baker's %"]) {
+        const header = table.getByText(name, { exact: true });
+        await expect(header).toBeVisible();
+        await expectContainedWithin(header, tableContainer);
+    }
+
+    // The canonical scenario also fits without needing the contained-scroll
+    // fallback.
+    const overflow = await tableContainer.evaluate(
+        (el) => el.scrollWidth - el.clientWidth,
+    );
+    expect(overflow).toBe(0);
 
     // The BASE chip remains associated with the Bread Flour row.
     const breadFlourRow = page.getByRole("row", { name: /Bread Flour/i });
@@ -59,7 +126,7 @@ test("keeps ingredient weights and Total Dough on one line and the table structu
     expect(scrollWidth).toBeLessThanOrEqual(320);
 });
 
-test("remains structurally intact at 320px for the maximum supported input combination (20in, Thick, 100 pizzas)", async ({
+test("remains structurally intact and reachable at 320px for the maximum supported input combination (20in, Thick, 100 pizzas)", async ({
     page,
 }) => {
     test.setTimeout(60000);
@@ -84,6 +151,22 @@ test("remains structurally intact at 320px for the maximum supported input combi
     await expectSingleLine(page, "52878.97 g");
     await expectSingleLine(page, "90000 g");
 
+    // The maximum-length scenario may rely on the contained-scroll fallback
+    // (see docs/stories/006-fix-mobile-ingredient-table-layout.md), but every
+    // column must remain reachable without permanent clipping: scrolling the
+    // table container fully right must fully reveal the last column.
+    const table = page.getByRole("table", { name: "Ingredients" });
+    const tableContainer = table.locator("xpath=..");
+    await tableContainer.evaluate((el) => {
+        el.scrollLeft = el.scrollWidth;
+    });
+    await expectContainedWithin(
+        table.getByText("Baker's %", { exact: true }),
+        tableContainer,
+    );
+
+    // No page-level horizontal scrolling, regardless of the table's own
+    // internal (contained) scroll position.
     const scrollWidth = await page.evaluate(
         () => document.documentElement.scrollWidth,
     );
