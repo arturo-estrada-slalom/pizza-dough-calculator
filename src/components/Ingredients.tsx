@@ -1,6 +1,5 @@
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { RECIPE_INGREDIENT_ORDER, RECIPE_INGREDIENTS } from "../domain/recipe";
@@ -12,6 +11,8 @@ import {
   IngredientsSubtitle,
   IngredientsTableContainer,
   HeaderCell,
+  DataCell,
+  WeightValue,
   IngredientRow,
   IngredientNameCell,
   BaseChip,
@@ -55,21 +56,21 @@ export function Ingredients({
                       <BaseChip label="BASE" size="small" />
                     )}
                   </IngredientNameCell>
-                  <TableCell align="right">
-                    {formatWeight(recipe[key])} g
-                  </TableCell>
-                  <TableCell align="right">
+                  <DataCell align="right">
+                    <WeightValue>{`${formatWeight(recipe[key])} g`}</WeightValue>
+                  </DataCell>
+                  <DataCell align="right">
                     {ingredient.bakersPercentageDisplay}%
-                  </TableCell>
+                  </DataCell>
                 </IngredientRow>
               );
             })}
             <TotalRow>
-              <TableCell>Total Dough</TableCell>
-              <TableCell align="right">
-                {formatWeight(totalDoughWeightGrams)} g
-              </TableCell>
-              <TableCell align="right" />
+              <DataCell>Total Dough</DataCell>
+              <DataCell align="right">
+                <WeightValue>{`${formatWeight(totalDoughWeightGrams)} g`}</WeightValue>
+              </DataCell>
+              <DataCell align="right" />
             </TotalRow>
           </TableBody>
         </Table>

@@ -40,7 +40,27 @@ export const HeaderCell = styled(TableCell)(({ theme }) => ({
   color: theme.palette.text.secondary,
   borderBottom: `1px solid ${strongDivider}`,
   whiteSpace: "nowrap",
+  padding: theme.spacing(1, 1),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(1, 2),
+  },
 }));
+
+// Narrows cell padding below the `sm` breakpoint so the Weight column has
+// room for longer calculated values without wrapping the number and its
+// unit onto separate lines.
+export const DataCell = styled(TableCell)(({ theme }) => ({
+  padding: theme.spacing(1, 1),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(1, 2),
+  },
+}));
+
+// Keeps a weight value and its "g" unit visually atomic on one line,
+// regardless of how narrow the Weight column becomes.
+export const WeightValue = styled("span")({
+  whiteSpace: "nowrap",
+});
 
 export const IngredientRow = styled(TableRow, {
   shouldForwardProp: (prop) => prop !== "isBase",
@@ -54,6 +74,10 @@ export const IngredientNameCell = styled(TableCell)(({ theme }) => ({
   gap: theme.spacing(1),
   fontWeight: 600,
   color: theme.palette.text.primary,
+  padding: theme.spacing(1, 1),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(1, 2),
+  },
 }));
 
 export const BaseChip = styled(Chip)(({ theme }) => ({
@@ -70,5 +94,9 @@ export const TotalRow = styled(TableRow)(({ theme }) => ({
     borderBottom: "none",
     fontWeight: 700,
     color: theme.palette.text.primary,
+    padding: theme.spacing(1, 1),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(1, 2),
+    },
   },
 }));

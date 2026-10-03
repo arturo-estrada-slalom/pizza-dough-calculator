@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready for Implementation
+Ready for QA
 
 ## User Story
 
