@@ -292,6 +292,10 @@ it('returns 2880g total dough for six 16-inch pizzas', () => {
   with updated tests reflecting the new expected behavior — do not leave
   stale assertions that no longer match the documented domain rules in
   `docs/PROJECT.md`.
+- New or changed user-facing text must be added through the localization
+  mechanism with an entry for every supported locale (`en-US`, `es-MX`),
+  per `docs/ARCHITECTURE.md` ("Localization") and `docs/CODING_STANDARDS.md`
+  — see Section 19 for the required automated coverage.
 - Do not implement functionality explicitly documented as reserved for
   the agent demonstration (per the root `AGENTS.md`), and do not write
   tests asserting behavior for such functionality either.
@@ -498,3 +502,53 @@ future story rather than retrofitted as part of unrelated work:
 
 Do not implement these tests as a side effect of unrelated work — track
 them as a dedicated backlog item.
+
+## 19. Localization Testing
+
+This section defines the automated coverage required by the localization
+standard established in `docs/ARCHITECTURE.md` ("Localization") and
+`docs/CODING_STANDARDS.md` (Section 13).
+
+### Translation-Resource Key Parity (Vitest)
+
+- Add a Vitest test that enumerates the keys of every supported locale's
+  translation resource and asserts structural parity in both directions:
+  every `en-US` key has an `es-MX` counterpart, and every `es-MX` key has
+  an `en-US` counterpart. A key present in only one locale's resource must
+  fail the test, regardless of which locale is missing it.
+- This test is the authoritative, low-level check for translation
+  completeness (AC-007-08 and equivalent future acceptance criteria). It
+  checks key *presence*, not translation wording — do not assert exact
+  translated strings here beyond what's needed to confirm a value exists
+  (e.g. non-empty).
+- Co-locate this test with the translation resources (e.g. alongside the
+  locale resource files), following Section 3's co-location convention.
+
+### Translated Content (Vitest/RTL and Playwright)
+
+- Component-level translated content (e.g. "does this component render
+  the expected label for the active locale") is tested with Vitest/RTL
+  per Sections 5–6, rendering with each locale active and asserting the
+  rendered text — the same accessible-query style as any other component
+  test.
+- Do not assert exact natural-language wording of `es-MX` translations
+  beyond what a story's acceptance criteria require; translation wording
+  is subject to human review (see `docs/stories/007-language-localization.md`,
+  "Spanish Translation Guidelines") and is not itself a source of test
+  flakiness to chase. Assert presence and correct key resolution, not
+  literal phrasing, unless a specific acceptance criterion names an exact
+  required string.
+- Language switching, persistence, and browser-language detection are
+  observable, integrated behavior and belong in Playwright E2E tests per
+  Section 18 — see the E2E Regression Coverage Requirement for the
+  specific scenarios a localization story must cover (e.g.
+  AC-007-13).
+
+### Guarding Against Hard-Coded Strings
+
+- Where practical, prefer reviewing new/changed components for
+  hard-coded user-facing strings during implementation and QA review
+  (per `docs/CODING_STANDARDS.md` Section 13) over adding bespoke
+  automated tooling to detect them — this app does not warrant a
+  dedicated lint rule or static-analysis step for this.
+

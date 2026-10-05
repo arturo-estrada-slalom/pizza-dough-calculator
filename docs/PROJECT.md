@@ -212,32 +212,44 @@ desktop and mobile.
 
 ---
 
-# IMPORTANT: Intentionally Incomplete Feature
+# Thickness
 
-Thickness adjustment is RESERVED FOR THE AGENT DEMONSTRATION.
+Thickness is a fully implemented calculator input (see
+`docs/stories/005-thickness-factors.md`). It is no longer reserved or
+incomplete.
 
-DO NOT implement thickness calculations unless a later task explicitly
-requests implementation of the thickness feature.
+The calculator supports exactly three thickness options, each applying a
+fixed multiplier to the Standard dough-ball weight:
 
-The initial application may display a thickness control, but changing it
-must NOT affect the dough calculation.
+| Thickness | Factor |
+|-----------|-------:|
+| Thin | 0.80 |
+| Standard | 1.00 |
+| Thick | 1.20 |
 
-The pre-demo calculation is:
-
-    doughBallWeight = 480 × (diameter / 16)^2
-
-The eventual intended formula is:
+Standard is the default selection. The full dough-ball weight formula is:
 
     doughBallWeight =
         480 × (diameter / 16)^2 × thicknessFactor
 
-where:
+Changing thickness changes the amount of dough required but does not change
+the recipe's baker's percentages or hydration.
 
-    thicknessFactor = 1.0
+---
 
-represents standard thickness.
+# Localization
 
-This unfinished feature is intentional and must not be "fixed" proactively.
+The application supports two locales:
+
+- English (`en-US`) — the runtime fallback locale.
+- Spanish (`es-MX`)
+
+All user-facing strings must be rendered through the application's
+localization mechanism rather than hard-coded into components, and
+translation resources must provide a value for every supported locale. See
+`docs/ARCHITECTURE.md` ("Localization") for the architectural boundary
+between domain logic and localization, and `docs/CODING_STANDARDS.md` and
+`docs/TESTING.md` for implementation and testing conventions.
 
 ---
 
