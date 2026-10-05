@@ -28,42 +28,39 @@ export const RECIPE_INGREDIENT_ORDER: IngredientKey[] = [
 // Single source of truth for the fixed recipe's baker's percentages
 // (docs/PROJECT.md). `bakersPercentage` drives calculation;
 // `bakersPercentageDisplay` is the documented fixed display string.
+// Display names are a presentation/localization concern resolved by the
+// presentation layer from `key` (docs/ARCHITECTURE.md "Localization") and
+// are not stored here.
 export const RECIPE_INGREDIENTS: Record<IngredientKey, IngredientDefinition> =
 {
   flour: {
     key: "flour",
-    name: "Bread Flour",
     bakersPercentage: 1,
     bakersPercentageDisplay: "100",
     isBase: true,
   },
   water: {
     key: "water",
-    name: "Water",
     bakersPercentage: 0.62,
     bakersPercentageDisplay: "62",
   },
   yeast: {
     key: "yeast",
-    name: "Yeast",
     bakersPercentage: 0.004,
     bakersPercentageDisplay: "0.4",
   },
   salt: {
     key: "salt",
-    name: "Salt",
     bakersPercentage: 0.025,
     bakersPercentageDisplay: "2.5",
   },
   sugar: {
     key: "sugar",
-    name: "Sugar",
     bakersPercentage: 0.02,
     bakersPercentageDisplay: "2.0",
   },
   oliveOil: {
     key: "oliveOil",
-    name: "Olive Oil",
     bakersPercentage: 0.033,
     bakersPercentageDisplay: "3.3",
   },

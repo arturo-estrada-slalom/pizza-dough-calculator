@@ -4,16 +4,29 @@ import Typography from "@mui/material/Typography";
 import { pizzaIconBackground } from "../theme";
 
 export const HeaderRoot = styled("header")(({ theme }) => ({
+  position: "relative",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   textAlign: "center",
   gap: theme.spacing(1),
+  // Reserves vertical space for the absolutely-positioned language
+  // selector in the top-right corner so it does not overlap the centered
+  // mobile title (docs/stories/007-language-localization.md "Language
+  // Selector").
+  paddingTop: theme.spacing(5),
   [theme.breakpoints.up("sm")]: {
     alignItems: "flex-start",
     textAlign: "left",
+    paddingTop: 0,
   },
 }));
+
+export const LanguageSelectorWrapper = styled(Box)({
+  position: "absolute",
+  top: 0,
+  right: 0,
+});
 
 export const TitleRow = styled(Box)(({ theme }) => ({
   display: "flex",

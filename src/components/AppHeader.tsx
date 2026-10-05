@@ -1,5 +1,8 @@
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "./LanguageSelector";
 import {
   HeaderRoot,
+  LanguageSelectorWrapper,
   TitleRow,
   IconBadge,
   Title,
@@ -7,15 +10,18 @@ import {
 } from "./AppHeader.styled";
 
 export function AppHeader() {
+  const { t } = useTranslation();
+
   return (
     <HeaderRoot>
+      <LanguageSelectorWrapper>
+        <LanguageSelector />
+      </LanguageSelectorWrapper>
       <TitleRow>
         <IconBadge aria-hidden="true">🍕</IconBadge>
-        <Title variant="h1">Pizza Dough Calculator</Title>
+        <Title variant="h1">{t("app.title")}</Title>
       </TitleRow>
-      <Subtitle variant="subtitle1">
-        Baker's percentages for home & professional use
-      </Subtitle>
+      <Subtitle variant="subtitle1">{t("app.subtitle")}</Subtitle>
     </HeaderRoot>
   );
 }
