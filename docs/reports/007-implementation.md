@@ -226,3 +226,86 @@ default/English locale).
   localization mechanism but is translated identically in both locales
   (`"BASE"`); this was a deliberate, in-scope decision (short label/
   abbreviation), not an oversight.
+
+## QA Verification History
+
+### Attempt 1 — PASS
+
+**Result:** PASS
+
+**Acceptance criteria verified:** AC-007-01, AC-007-02, AC-007-03,
+AC-007-04, AC-007-05, AC-007-06, AC-007-07, AC-007-08, AC-007-09,
+AC-007-10, AC-007-11, AC-007-12, AC-007-13, AC-007-14
+
+**Acceptance criteria that failed or could not be verified:** None
+
+**Verification commands executed:**
+
+| Command | Result |
+|---|---|
+| `npm run test:run` | Passed — 14 test files, 93 tests |
+| `npm run build` (`tsc -b && vite build`) | Passed, no type errors |
+| `npm run lint` | Passed, no errors |
+| `npm run test:e2e` | Passed — 16/16 tests, including all 5 `e2e/localization.spec.ts` scenarios |
+
+**Manual/code review verification performed:**
+
+- Read `src/i18n/languages.ts`, `languageStorage.ts`, `i18n.ts` and
+  confirmed the stored-preference → browser-language → `en-US` default
+  priority, the Spanish-variant (`es-ES`/`es-AR`/bare `es`) → `es-MX`
+  detection, the try/catch resilience around `localStorage` reads/writes,
+  and the documented storage key (`pizza-dough-calculator.language`)
+  storing the raw locale code (AC-007-01, AC-007-02, AC-007-03, AC-007-06).
+- Read `src/i18n/i18n.test.ts` and confirmed it proves the `fallbackLng`
+  mechanism with a deliberately incomplete resource (AC-007-07).
+- Read `src/i18n/translations.test.ts` and confirmed bidirectional key-path
+  parity checks (`en-US` ⇄ `es-MX`) plus non-empty-value checks for both
+  locales (AC-007-08).
+- Read `LanguageSelector.tsx`/`.test.tsx` and confirmed both options always
+  render their own native name + flag regardless of active locale, are
+  positioned top-right via `AppHeader`'s `LanguageSelectorWrapper`, that
+  selecting a new language calls `i18n.changeLanguage()` and
+  `persistLanguage()` with no reload, and that reselecting the
+  already-active option is a no-op (does not re-write `localStorage`)
+  (AC-007-04, AC-007-12, Edge Cases).
+- Read `AppHeader.tsx`, `PizzaSettings.tsx`, `DoughBallResult.tsx`,
+  `RecipeSummary.tsx`, `Ingredients.tsx` end-to-end and confirmed every
+  user-facing string renders via `t(...)` translation keys with no
+  component-level `language === "es-MX" ? ... : ...` branching; grep across
+  `src/**/*.{ts,tsx}` for `language ===` and literal `"es-MX"` ternaries
+  found none outside i18n infrastructure/tests (AC-007-09).
+- Read `src/domain/types.ts` and `src/domain/recipe.ts` and confirmed
+  `IngredientDefinition`/`RECIPE_INGREDIENTS` no longer carry an English
+  `name` field, display text is resolved in presentation via
+  `ingredientNames.<key>`/`thickness.<key>`, and `src/domain/` has no
+  `i18next`/`react-i18next` import (AC-007-14).
+- Read `es-MX.ts` and confirmed ingredient names use natural Mexican
+  Spanish terminology (e.g. `flour` → "Harina de Fuerza", matching the
+  story's own example); wording is not clearly incorrect, misleading, or
+  unnatural (AC-007-10).
+- Read `App.test.tsx`'s Spanish-switch test and `e2e/localization.spec.ts`'s
+  "calculated results are unaffected by language" scenario and confirmed
+  the dough-ball weight (367.5g) is asserted identical before and after
+  switching from English to Spanish (AC-007-11).
+- Read `e2e/localization.spec.ts` and confirmed it covers: default English
+  display, browser-based Spanish detection, stored-preference priority
+  over browser language, user language switching without reload,
+  persistence across `page.reload()`, representative translated content
+  (ingredient name, headings), and unchanged calculated results —
+  satisfying the minimum scenario list in AC-007-13 and the Section 18 E2E
+  Regression Coverage Requirement for this story's observable behavior.
+- Confirmed `docs/PROJECT.md`, `docs/ARCHITECTURE.md`,
+  `docs/CODING_STANDARDS.md`, and `docs/TESTING.md` already document the
+  `en-US`/`es-MX` locales, domain/localization independence, translation
+  key parity, English runtime fallback, and localization testing
+  requirements (Section 19), consistent with the implementation.
+
+**Findings:** No defects found. Required E2E regression coverage for this
+story's observable localization behavior is present and passing. The
+"Known Issues / Remaining Concerns" items in this report (Spanish wording
+subject to human review, header overlap at extreme narrow widths, the
+identical "BASE" label in both locales) are documented, non-blocking,
+in-scope decisions per the story's own allowances and are not treated as
+defects.
+
+**Overall status:** PASS
