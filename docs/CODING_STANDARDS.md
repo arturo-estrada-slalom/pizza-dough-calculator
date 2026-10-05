@@ -20,7 +20,9 @@ once a test framework is configured (see `docs/PROJECT.md`).
 - Do not add dependencies (state managers, routing libraries, CSS
   frameworks, utility libraries, etc.) unless a requirement explicitly
   calls for them. MUI, React, and TypeScript are the only UI/runtime
-  dependencies currently approved.
+  dependencies currently approved, plus a localization/i18n library once a
+  localization requirement calls for one (see `docs/ARCHITECTURE.md`
+  "Localization").
 - Do not introduce a backend, database, authentication, or external API
   unless a requirement explicitly calls for one (see `AGENTS.md`).
 - Do not build abstractions (factories, generic wrappers, plugin systems,
@@ -28,8 +30,9 @@ once a test framework is configured (see `docs/PROJECT.md`).
   abstraction only when a second real usage justifies it.
 - Preserve existing functionality when implementing new features. Read
   `AGENTS.md` and `docs/PROJECT.md` before changing domain/calculation
-  logic — some features (e.g. thickness) are intentionally incomplete and
-  must not be "fixed" proactively unless explicitly requested.
+  logic — some features may be explicitly documented as reserved or
+  intentionally incomplete and must not be "fixed" proactively unless
+  explicitly requested.
 
 ## 2. TypeScript Conventions & Type Safety
 
@@ -296,3 +299,22 @@ once a test framework is configured (see `docs/PROJECT.md`).
   do not perform unrelated reformatting).
 - Run `npm run build` (which runs `tsc -b` before `vite build`) to confirm
   no type errors before considering a change complete.
+
+## 13. Localization / User-Facing Text
+
+- Every user-facing string must be rendered through the application's
+  localization mechanism via a translation key, never hard-coded directly
+  in JSX or component logic. See `docs/ARCHITECTURE.md` ("Localization")
+  for the domain/presentation boundary this implies.
+- Do not write parallel language-selection logic in components (e.g.
+  `language === "es-MX" ? "Ingredientes" : "Ingredients"`); consume the
+  localization mechanism instead.
+- Add a translation entry for every supported locale (`en-US`, `es-MX`)
+  whenever introducing or changing user-facing text. Translation resources
+  must maintain structural key parity across locales — do not add a key to
+  one locale's resource without the matching key in the other.
+- Prefer resolving translated display text from existing stable domain
+  identifiers (e.g. an ingredient or thickness key) rather than introducing
+  new identifiers solely to support translation.
+- See `docs/TESTING.md` for the required automated tests that enforce
+  translation-key parity and presence.

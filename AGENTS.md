@@ -34,6 +34,12 @@ implementing, reviewing, or testing changes.
   truth for color values when implementing or styling UI, rather than
   colors estimated from design mockups or screenshots, and apply them
   through a single theme/token mechanism per `docs/CODING_STANDARDS.md`.
+- Implementation agents must render all user-facing strings through the
+  application's localization mechanism rather than hard-coding them,
+  provide a translation for every supported locale (`en-US`, `es-MX`),
+  and preserve translation-resource key parity, per
+  `docs/ARCHITECTURE.md` ("Localization") and `docs/CODING_STANDARDS.md`.
+  Domain logic must remain independent of the localization mechanism.
 - Implementation agents must follow `docs/TESTING.md` when adding or
   changing functionality, in addition to `docs/PROJECT.md` and
   `docs/CODING_STANDARDS.md`. This includes `docs/TESTING.md`'s "E2E
@@ -49,6 +55,11 @@ implementing, reviewing, or testing changes.
 - QA/testing agents must verify visual/color requirements against
   `docs/COLOR_PALETTE.md` rather than approximating colors from
   screenshots or mockups.
+- QA/testing agents must verify, for stories that introduce or change
+  user-facing text, that the localization-resource key-parity test
+  required by `docs/TESTING.md` exists and passes, and that no new
+  user-facing strings are hard-coded outside the localization mechanism,
+  per `docs/ARCHITECTURE.md` ("Localization") and `docs/CODING_STANDARDS.md`.
 - Every agent must identify which role it is performing (Requirements,
   Implementation, or QA) and follow that role's responsibilities and
   boundaries as defined in `docs/AGENT_WORKFLOW.md` — in particular,

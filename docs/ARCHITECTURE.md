@@ -160,6 +160,47 @@ specific recipe being calculated.
 
 ---
 
+## Localization
+
+The application supports two locales: English (`en-US`, the runtime fallback
+locale) and Spanish (`es-MX`). See `docs/stories/007-language-localization.md`
+for the behavior this establishes.
+
+Localization is a presentation-layer concern:
+
+- User-facing strings must be rendered through the application's
+  localization mechanism (translation keys resolved against per-locale
+  translation resources), not hard-coded directly in JSX.
+- The domain layer and domain configuration must have no dependency on the
+  localization/i18n library. Domain code must not import it, and must not
+  branch on the active language.
+- Where the domain layer already exposes stable identifiers (ingredient
+  keys such as `flour`/`water`/`yeast`, thickness keys such as
+  `thin`/`standard`/`thick`), the presentation layer resolves translated
+  display text from those identifiers (e.g. an `ingredients.flour`
+  translation key) rather than storing display strings in domain
+  configuration. Domain configuration remains the single source of truth
+  for calculation values (baker's percentages, reference constants,
+  thickness factors) — never for translated display text.
+- Changing a translated label must never require changing domain logic,
+  domain types, or domain configuration, and must never change a
+  calculated result (see "Testing Boundaries").
+- Translation resources must exist for every supported locale and must
+  maintain structural key parity across locales (`keys(en-US) ==
+  keys(es-MX)`). A key present in only one locale's resource is a defect.
+- New user-facing content introduced by any future feature must be added
+  through the localization mechanism, with a translation provided for
+  every supported locale, rather than hard-coded.
+- Locale-specific numeric, unit-system, currency, and date/time formatting
+  are out of scope for this application; localization affects displayed
+  text only and must not alter calculator mathematics or numeric results.
+
+The exact localization library and resource file organization are technical
+implementation decisions, made following the principles above and the
+project's `docs/CODING_STANDARDS.md`.
+
+---
+
 ## Utility and Helper Organization
 
 Non-rendering supporting logic in this project falls into three distinct
@@ -346,14 +387,22 @@ The application currently requires no:
 - Backend
 - Database
 - Authentication
-- Persistence layer
-- External API
 - Server-side state
+- External API
 
 Do not introduce these systems unless required by a future feature.
 
+The only approved client-side persistence is the browser's `localStorage`,
+used solely to persist the user's selected language preference (see
+"Localization" above and `docs/stories/007-language-localization.md`). This
+is not a general-purpose persistence layer — do not use `localStorage` or
+introduce other persistence mechanisms for unrelated application state
+without a concrete requirement.
+
 Third-party dependencies should only be added when they solve a concrete
-project requirement.
+project requirement. A localization/i18n library is an approved dependency
+category for implementing the "Localization" section above; the specific
+library choice follows `docs/CODING_STANDARDS.md`.
 
 ---
 
@@ -374,6 +423,9 @@ When modifying the application:
 11. Apply the "Utility and Helper Organization" decision rule above when
     extracting non-rendering logic from a component, instead of leaving it
     inline or guessing where it belongs.
+12. Keep the domain layer independent of the localization mechanism;
+    resolve translated display text in the presentation layer from stable
+    domain identifiers (see "Localization" above).
 
 When a proposed solution can be implemented cleanly within the existing
 architecture, prefer that solution over introducing a new architectural
