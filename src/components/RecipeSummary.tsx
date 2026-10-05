@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { HYDRATION_PERCENT_DISPLAY } from "../domain/recipe";
 import { formatWeight } from "../utils/formatWeight";
 import {
@@ -7,17 +8,17 @@ import {
   SummaryLabel,
 } from "./RecipeSummary.styled";
 
-type SummaryMetricLabel =
-  | "Total Dough"
-  | "Total Flour"
-  | "Total Water"
-  | "Hydration";
+type SummaryMetricKey =
+  | "common.totalDough"
+  | "recipeSummary.totalFlour"
+  | "recipeSummary.totalWater"
+  | "recipeSummary.hydration";
 
-const METRICS: { label: SummaryMetricLabel; unit: string }[] = [
-  { label: "Total Dough", unit: "g" },
-  { label: "Total Flour", unit: "g" },
-  { label: "Total Water", unit: "g" },
-  { label: "Hydration", unit: "%" },
+const METRICS: { labelKey: SummaryMetricKey; unit: string }[] = [
+  { labelKey: "common.totalDough", unit: "g" },
+  { labelKey: "recipeSummary.totalFlour", unit: "g" },
+  { labelKey: "recipeSummary.totalWater", unit: "g" },
+  { labelKey: "recipeSummary.hydration", unit: "%" },
 ];
 
 type RecipeSummaryProps = {
@@ -31,23 +32,25 @@ export function RecipeSummary({
   totalFlourGrams,
   totalWaterGrams,
 }: RecipeSummaryProps) {
-  const values: Record<SummaryMetricLabel, string> = {
-    "Total Dough": formatWeight(totalDoughWeightGrams),
-    "Total Flour": formatWeight(totalFlourGrams),
-    "Total Water": formatWeight(totalWaterGrams),
+  const { t } = useTranslation();
+
+  const values: Record<SummaryMetricKey, string> = {
+    "common.totalDough": formatWeight(totalDoughWeightGrams),
+    "recipeSummary.totalFlour": formatWeight(totalFlourGrams),
+    "recipeSummary.totalWater": formatWeight(totalWaterGrams),
     // Hydration is fixed by the recipe formula, independent of inputs.
-    Hydration: HYDRATION_PERCENT_DISPLAY,
+    "recipeSummary.hydration": HYDRATION_PERCENT_DISPLAY,
   };
 
   return (
-    <SummaryCard aria-label="Recipe Summary">
-      {METRICS.map(({ label, unit }) => (
-        <SummaryMetric key={label}>
+    <SummaryCard aria-label={t("recipeSummary.ariaLabel")}>
+      {METRICS.map(({ labelKey, unit }) => (
+        <SummaryMetric key={labelKey}>
           <SummaryValue>
-            {values[label]}
+            {values[labelKey]}
             <span className="unit">{unit}</span>
           </SummaryValue>
-          <SummaryLabel>{label}</SummaryLabel>
+          <SummaryLabel>{t(labelKey)}</SummaryLabel>
         </SummaryMetric>
       ))}
     </SummaryCard>

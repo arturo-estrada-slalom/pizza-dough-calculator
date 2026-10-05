@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Ingredients } from "./Ingredients";
 import type { Recipe } from "../domain/types";
+import { en_US } from "../i18n/locales/en-US";
 
 const CANONICAL_RECIPE: Recipe = {
   flour: 1692.13,
@@ -23,7 +24,7 @@ describe("<Ingredients />", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Ingredients" }),
+      screen.getByRole("heading", { name: en_US.ingredients.title }),
     ).toBeInTheDocument();
   });
 
@@ -36,29 +37,31 @@ describe("<Ingredients />", () => {
       />,
     );
 
-    const table = screen.getByRole("table", { name: "Ingredients" });
+    const table = screen.getByRole("table", {
+      name: en_US.ingredients.tableAriaLabel,
+    });
 
-    expect(table).toHaveTextContent("Bread Flour");
+    expect(table).toHaveTextContent(en_US.ingredientNames.flour);
     expect(table).toHaveTextContent("1692.13 g");
     expect(table).toHaveTextContent("100%");
 
-    expect(table).toHaveTextContent("Water");
+    expect(table).toHaveTextContent(en_US.ingredientNames.water);
     expect(table).toHaveTextContent("1049.12 g");
     expect(table).toHaveTextContent("62%");
 
-    expect(table).toHaveTextContent("Yeast");
+    expect(table).toHaveTextContent(en_US.ingredientNames.yeast);
     expect(table).toHaveTextContent("6.77 g");
     expect(table).toHaveTextContent("0.4%");
 
-    expect(table).toHaveTextContent("Salt");
+    expect(table).toHaveTextContent(en_US.ingredientNames.salt);
     expect(table).toHaveTextContent("42.3 g");
     expect(table).toHaveTextContent("2.5%");
 
-    expect(table).toHaveTextContent("Sugar");
+    expect(table).toHaveTextContent(en_US.ingredientNames.sugar);
     expect(table).toHaveTextContent("33.84 g");
     expect(table).toHaveTextContent("2.0%");
 
-    expect(table).toHaveTextContent("Olive Oil");
+    expect(table).toHaveTextContent(en_US.ingredientNames.oliveOil);
     expect(table).toHaveTextContent("55.84 g");
     expect(table).toHaveTextContent("3.3%");
   });
@@ -72,11 +75,15 @@ describe("<Ingredients />", () => {
       />,
     );
 
-    const breadFlourRow = screen.getByRole("row", { name: /Bread Flour/i });
-    expect(breadFlourRow).toHaveTextContent("BASE");
+    const breadFlourRow = screen.getByRole("row", {
+      name: new RegExp(en_US.ingredientNames.flour, "i"),
+    });
+    expect(breadFlourRow).toHaveTextContent(en_US.ingredients.base);
 
-    const waterRow = screen.getByRole("row", { name: /^Water/i });
-    expect(waterRow).not.toHaveTextContent("BASE");
+    const waterRow = screen.getByRole("row", {
+      name: new RegExp(`^${en_US.ingredientNames.water}`, "i"),
+    });
+    expect(waterRow).not.toHaveTextContent(en_US.ingredients.base);
   });
 
   it("displays the total dough weight", () => {
@@ -88,7 +95,7 @@ describe("<Ingredients />", () => {
       />,
     );
 
-    expect(screen.getByText("Total Dough")).toBeInTheDocument();
+    expect(screen.getByText(en_US.common.totalDough)).toBeInTheDocument();
     expect(screen.getByText("2880 g")).toBeInTheDocument();
   });
 
@@ -110,7 +117,9 @@ describe("<Ingredients />", () => {
       />,
     );
 
-    const table = screen.getByRole("table", { name: "Ingredients" });
+    const table = screen.getByRole("table", {
+      name: en_US.ingredients.tableAriaLabel,
+    });
 
     expect(table).toHaveTextContent("100%");
     expect(table).toHaveTextContent("62%");

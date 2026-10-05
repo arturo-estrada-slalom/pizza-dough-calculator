@@ -9,6 +9,7 @@ import {
 } from "./PizzaSettings";
 import type { Thickness } from "../domain/types";
 import { DEFAULT_THICKNESS } from "../domain/recipe";
+import { en_US } from "../i18n/locales/en-US";
 
 // Test harness mirroring how App lifts and owns this controlled state.
 function ControlledPizzaSettings() {
@@ -33,16 +34,18 @@ describe("<PizzaSettings />", () => {
     render(<ControlledPizzaSettings />);
 
     expect(
-      screen.getByRole("heading", { name: "Pizza Settings" }),
+      screen.getByRole("heading", { name: en_US.pizzaSettings.title }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Diameter" }),
+      screen.getByRole("heading", { name: en_US.pizzaSettings.diameterLabel }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Thickness" }),
+      screen.getByRole("heading", { name: en_US.pizzaSettings.thicknessLabel }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Number of Pizzas" }),
+      screen.getByRole("heading", {
+        name: en_US.pizzaSettings.numberOfPizzasLabel,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -50,10 +53,14 @@ describe("<PizzaSettings />", () => {
     it("defaults to 14 inches and displays the min/max range", () => {
       render(<ControlledPizzaSettings />);
 
-      const slider = screen.getByRole("slider", { name: "Diameter" });
+      const slider = screen.getByRole("slider", {
+        name: en_US.pizzaSettings.diameterLabel,
+      });
       expect(slider).toHaveAttribute("aria-valuenow", "14");
       expect(screen.getByText("14")).toBeInTheDocument();
-      expect(screen.getByText("inches")).toBeInTheDocument();
+      expect(
+        screen.getByText(en_US.pizzaSettings.inchesUnit),
+      ).toBeInTheDocument();
       expect(screen.getByText('10"')).toBeInTheDocument();
       expect(screen.getByText('20"')).toBeInTheDocument();
     });
@@ -62,7 +69,9 @@ describe("<PizzaSettings />", () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      const slider = screen.getByRole("slider", { name: "Diameter" });
+      const slider = screen.getByRole("slider", {
+        name: en_US.pizzaSettings.diameterLabel,
+      });
       slider.focus();
       await user.keyboard("{ArrowRight}");
 
@@ -74,7 +83,9 @@ describe("<PizzaSettings />", () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      const slider = screen.getByRole("slider", { name: "Diameter" });
+      const slider = screen.getByRole("slider", {
+        name: en_US.pizzaSettings.diameterLabel,
+      });
       slider.focus();
       for (let i = 0; i < 10; i++) {
         await user.keyboard("{ArrowLeft}");
@@ -87,7 +98,9 @@ describe("<PizzaSettings />", () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      const slider = screen.getByRole("slider", { name: "Diameter" });
+      const slider = screen.getByRole("slider", {
+        name: en_US.pizzaSettings.diameterLabel,
+      });
       slider.focus();
       for (let i = 0; i < 10; i++) {
         await user.keyboard("{ArrowRight}");
@@ -101,82 +114,90 @@ describe("<PizzaSettings />", () => {
     it("renders exactly three options: Thin, Standard, and Thick, all enabled", () => {
       render(<ControlledPizzaSettings />);
 
-      expect(screen.getByRole("button", { name: "Thin" })).toBeEnabled();
-      expect(screen.getByRole("button", { name: "Standard" })).toBeEnabled();
-      expect(screen.getByRole("button", { name: "Thick" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thin }),
+      ).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.standard }),
+      ).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thick }),
+      ).toBeEnabled();
     });
 
     it("indicates Standard as the currently selected option by default", () => {
       render(<ControlledPizzaSettings />);
 
-      expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      expect(screen.getByRole("button", { name: "Thin" })).toHaveAttribute(
-        "aria-pressed",
-        "false",
-      );
-      expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
-        "aria-pressed",
-        "false",
-      );
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.standard }),
+      ).toHaveAttribute("aria-pressed", "true");
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thin }),
+      ).toHaveAttribute("aria-pressed", "false");
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thick }),
+      ).toHaveAttribute("aria-pressed", "false");
     });
 
     it("selects Thin and deselects Standard when the Thin option is activated", async () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      await user.click(screen.getByRole("button", { name: "Thin" }));
+      await user.click(
+        screen.getByRole("button", { name: en_US.thickness.thin }),
+      );
 
-      expect(screen.getByRole("button", { name: "Thin" })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
-        "aria-pressed",
-        "false",
-      );
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thin }),
+      ).toHaveAttribute("aria-pressed", "true");
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.standard }),
+      ).toHaveAttribute("aria-pressed", "false");
     });
 
     it("selects Thick when the Thick option is activated", async () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      await user.click(screen.getByRole("button", { name: "Thick" }));
-
-      expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
-        "aria-pressed",
-        "true",
+      await user.click(
+        screen.getByRole("button", { name: en_US.thickness.thick }),
       );
+
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thick }),
+      ).toHaveAttribute("aria-pressed", "true");
     });
 
     it("keeps the currently selected thickness selected when the already-active option is activated again", async () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      await user.click(screen.getByRole("button", { name: "Standard" }));
-
-      expect(screen.getByRole("button", { name: "Standard" })).toHaveAttribute(
-        "aria-pressed",
-        "true",
+      await user.click(
+        screen.getByRole("button", { name: en_US.thickness.standard }),
       );
+
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.standard }),
+      ).toHaveAttribute("aria-pressed", "true");
     });
 
     it("keeps the selected thickness unchanged when the diameter is changed", async () => {
       const user = userEvent.setup();
       render(<ControlledPizzaSettings />);
 
-      await user.click(screen.getByRole("button", { name: "Thick" }));
+      await user.click(
+        screen.getByRole("button", { name: en_US.thickness.thick }),
+      );
 
-      const slider = screen.getByRole("slider", { name: "Diameter" });
+      const slider = screen.getByRole("slider", {
+        name: en_US.pizzaSettings.diameterLabel,
+      });
       slider.focus();
       await user.keyboard("{ArrowRight}");
 
-      expect(screen.getByRole("button", { name: "Thick" })).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
+      expect(
+        screen.getByRole("button", { name: en_US.thickness.thick }),
+      ).toHaveAttribute("aria-pressed", "true");
     });
   });
 
@@ -192,7 +213,9 @@ describe("<PizzaSettings />", () => {
       render(<ControlledPizzaSettings />);
 
       await user.click(
-        screen.getByRole("button", { name: /increase number of pizzas/i }),
+        screen.getByRole("button", {
+          name: en_US.pizzaSettings.increaseAriaLabel,
+        }),
       );
 
       expect(screen.getByText("5")).toBeInTheDocument();
@@ -203,7 +226,9 @@ describe("<PizzaSettings />", () => {
       render(<ControlledPizzaSettings />);
 
       await user.click(
-        screen.getByRole("button", { name: /decrease number of pizzas/i }),
+        screen.getByRole("button", {
+          name: en_US.pizzaSettings.decreaseAriaLabel,
+        }),
       );
 
       expect(screen.getByText("3")).toBeInTheDocument();
@@ -214,7 +239,7 @@ describe("<PizzaSettings />", () => {
       render(<ControlledPizzaSettings />);
 
       const increment = screen.getByRole("button", {
-        name: /increase number of pizzas/i,
+        name: en_US.pizzaSettings.increaseAriaLabel,
       });
       for (let i = 0; i < 96; i++) {
         await user.click(increment);
@@ -229,7 +254,7 @@ describe("<PizzaSettings />", () => {
       render(<ControlledPizzaSettings />);
 
       const decrement = screen.getByRole("button", {
-        name: /decrease number of pizzas/i,
+        name: en_US.pizzaSettings.decreaseAriaLabel,
       });
       for (let i = 0; i < 3; i++) {
         await user.click(decrement);

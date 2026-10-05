@@ -10,7 +10,6 @@ export type Thickness = "thin" | "standard" | "thick";
 
 export type IngredientDefinition = {
   key: IngredientKey;
-  name: string;
   bakersPercentage: number;
   bakersPercentageDisplay: string;
   isBase?: boolean;
