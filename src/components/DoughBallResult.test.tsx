@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DoughBallResult } from "./DoughBallResult";
+import { en_US } from "../i18n/locales/en-US";
 
 describe("<DoughBallResult />", () => {
   it("renders the Dough Ball label, weight, unit, pizza-count indicator, and context", () => {
@@ -13,14 +14,14 @@ describe("<DoughBallResult />", () => {
       />,
     );
 
-    expect(screen.getByText("Dough Ball")).toBeInTheDocument();
+    expect(screen.getByText(en_US.doughBall.label)).toBeInTheDocument();
     expect(screen.getByText("480")).toBeInTheDocument();
     expect(screen.getByText("g")).toBeInTheDocument();
     expect(screen.getByText("× 6")).toBeInTheDocument();
     expect(screen.getByText('per 16" standard pizza')).toBeInTheDocument();
   });
 
-  it("renders as an accessible region named 'Dough Ball result'", () => {
+  it("renders as an accessible region named for the Dough Ball result", () => {
     render(
       <DoughBallResult
         doughBallWeightGrams={480}
@@ -31,7 +32,7 @@ describe("<DoughBallResult />", () => {
     );
 
     expect(
-      screen.getByRole("region", { name: "Dough Ball result" }),
+      screen.getByRole("region", { name: en_US.doughBall.resultAriaLabel }),
     ).toBeInTheDocument();
   });
 

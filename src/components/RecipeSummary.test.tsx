@@ -1,9 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { RecipeSummary } from "./RecipeSummary";
+import { en_US } from "../i18n/locales/en-US";
 
 describe("<RecipeSummary />", () => {
-  it("renders as an accessible region named 'Recipe Summary'", () => {
+  it("renders as an accessible region named for the Recipe Summary", () => {
     render(
       <RecipeSummary
         totalDoughWeightGrams={2880}
@@ -13,7 +14,7 @@ describe("<RecipeSummary />", () => {
     );
 
     expect(
-      screen.getByRole("region", { name: "Recipe Summary" }),
+      screen.getByRole("region", { name: en_US.recipeSummary.ariaLabel }),
     ).toBeInTheDocument();
   });
 
@@ -26,10 +27,14 @@ describe("<RecipeSummary />", () => {
       />,
     );
 
-    expect(screen.getByText("Total Dough")).toBeInTheDocument();
-    expect(screen.getByText("Total Flour")).toBeInTheDocument();
-    expect(screen.getByText("Total Water")).toBeInTheDocument();
-    expect(screen.getByText("Hydration")).toBeInTheDocument();
+    expect(screen.getByText(en_US.common.totalDough)).toBeInTheDocument();
+    expect(
+      screen.getByText(en_US.recipeSummary.totalFlour),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(en_US.recipeSummary.totalWater),
+    ).toBeInTheDocument();
+    expect(screen.getByText(en_US.recipeSummary.hydration)).toBeInTheDocument();
 
     expect(screen.getByText("2880")).toBeInTheDocument();
     expect(screen.getByText("1692.13")).toBeInTheDocument();
@@ -37,13 +42,22 @@ describe("<RecipeSummary />", () => {
     expect(screen.getByText("62")).toBeInTheDocument();
 
     const labels = screen
-      .getAllByText(/Total Dough|Total Flour|Total Water|Hydration/)
+      .getAllByText(
+        new RegExp(
+          [
+            en_US.common.totalDough,
+            en_US.recipeSummary.totalFlour,
+            en_US.recipeSummary.totalWater,
+            en_US.recipeSummary.hydration,
+          ].join("|"),
+        ),
+      )
       .map((el) => el.textContent);
     expect(labels).toEqual([
-      "Total Dough",
-      "Total Flour",
-      "Total Water",
-      "Hydration",
+      en_US.common.totalDough,
+      en_US.recipeSummary.totalFlour,
+      en_US.recipeSummary.totalWater,
+      en_US.recipeSummary.hydration,
     ]);
   });
 

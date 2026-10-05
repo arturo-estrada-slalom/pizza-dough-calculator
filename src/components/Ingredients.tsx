@@ -2,6 +2,7 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { useTranslation } from "react-i18next";
 import { RECIPE_INGREDIENT_ORDER, RECIPE_INGREDIENTS } from "../domain/recipe";
 import type { Recipe } from "../domain/types";
 import { formatWeight } from "../utils/formatWeight";
@@ -30,19 +31,25 @@ export function Ingredients({
   totalDoughWeightGrams,
   pizzaCount,
 }: IngredientsProps) {
+  const { t } = useTranslation();
+
   return (
     <IngredientsCard>
-      <IngredientsTitle variant="h2">Ingredients</IngredientsTitle>
+      <IngredientsTitle variant="h2">{t("ingredients.title")}</IngredientsTitle>
       <IngredientsSubtitle>
-        Baker's percentages · {pizzaCount} pizzas
+        {t("ingredients.subtitle", { count: pizzaCount })}
       </IngredientsSubtitle>
       <IngredientsTableContainer>
-        <Table size="small" aria-label="Ingredients">
+        <Table size="small" aria-label={t("ingredients.tableAriaLabel")}>
           <TableHead>
             <TableRow>
-              <HeaderCell>Ingredient</HeaderCell>
-              <HeaderCell align="right">Weight</HeaderCell>
-              <HeaderCell align="right">Baker's %</HeaderCell>
+              <HeaderCell>{t("ingredients.ingredientHeader")}</HeaderCell>
+              <HeaderCell align="right">
+                {t("ingredients.weightHeader")}
+              </HeaderCell>
+              <HeaderCell align="right">
+                {t("ingredients.bakersPercentHeader")}
+              </HeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -51,9 +58,9 @@ export function Ingredients({
               return (
                 <IngredientRow key={key} isBase={ingredient.isBase}>
                   <IngredientNameCell>
-                    {ingredient.name}
+                    {t(`ingredientNames.${key}`)}
                     {ingredient.isBase && (
-                      <BaseChip label="BASE" size="small" />
+                      <BaseChip label={t("ingredients.base")} size="small" />
                     )}
                   </IngredientNameCell>
                   <DataCell align="right">
@@ -66,7 +73,7 @@ export function Ingredients({
               );
             })}
             <TotalRow>
-              <DataCell>Total Dough</DataCell>
+              <DataCell>{t("common.totalDough")}</DataCell>
               <DataCell align="right">
                 <WeightValue>{`${formatWeight(totalDoughWeightGrams)} g`}</WeightValue>
               </DataCell>

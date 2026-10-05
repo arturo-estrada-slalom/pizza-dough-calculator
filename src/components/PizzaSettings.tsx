@@ -1,5 +1,6 @@
 import Divider from "@mui/material/Divider";
 import type { MouseEvent } from "react";
+import { useTranslation } from "react-i18next";
 import type { Thickness } from "../domain/types";
 import {
   SettingsCard,
@@ -43,6 +44,8 @@ export function PizzaSettings({
   pizzaCount,
   onPizzaCountChange,
 }: PizzaSettingsProps) {
+  const { t } = useTranslation();
+
   const handleDiameterChange = (_event: Event, newValue: number | number[]) => {
     onDiameterChange(Array.isArray(newValue) ? newValue[0] : newValue);
   };
@@ -68,19 +71,23 @@ export function PizzaSettings({
 
   return (
     <SettingsCard>
-      <SettingsTitle variant="h2">Pizza Settings</SettingsTitle>
+      <SettingsTitle variant="h2">{t("pizzaSettings.title")}</SettingsTitle>
 
       <Section>
         <DiameterHeader>
-          <SectionLabel variant="h3">Diameter</SectionLabel>
+          <SectionLabel variant="h3">
+            {t("pizzaSettings.diameterLabel")}
+          </SectionLabel>
           <DiameterValue>
             {diameter}
-            <span className="unit">inches</span>
+            <span className="unit">{t("pizzaSettings.inchesUnit")}</span>
           </DiameterValue>
         </DiameterHeader>
         <DiameterSlider
-          aria-label="Diameter"
-          getAriaValueText={(value) => `${value} inches`}
+          aria-label={t("pizzaSettings.diameterLabel")}
+          getAriaValueText={(value) =>
+            `${value} ${t("pizzaSettings.inchesUnit")}`
+          }
           value={diameter}
           onChange={handleDiameterChange}
           min={DIAMETER_MIN}
@@ -96,26 +103,34 @@ export function PizzaSettings({
       <Divider />
 
       <Section>
-        <SectionLabel variant="h3">Thickness</SectionLabel>
+        <SectionLabel variant="h3">
+          {t("pizzaSettings.thicknessLabel")}
+        </SectionLabel>
         <ThicknessToggleGroup
           value={thickness}
           exclusive
           onChange={handleThicknessChange}
-          aria-label="Thickness"
+          aria-label={t("pizzaSettings.thicknessLabel")}
         >
-          <ThicknessOption value="thin">Thin</ThicknessOption>
-          <ThicknessOption value="standard">Standard</ThicknessOption>
-          <ThicknessOption value="thick">Thick</ThicknessOption>
+          <ThicknessOption value="thin">{t("thickness.thin")}</ThicknessOption>
+          <ThicknessOption value="standard">
+            {t("thickness.standard")}
+          </ThicknessOption>
+          <ThicknessOption value="thick">
+            {t("thickness.thick")}
+          </ThicknessOption>
         </ThicknessToggleGroup>
       </Section>
 
       <Divider />
 
       <Section>
-        <SectionLabel variant="h3">Number of Pizzas</SectionLabel>
+        <SectionLabel variant="h3">
+          {t("pizzaSettings.numberOfPizzasLabel")}
+        </SectionLabel>
         <PizzaCountRow>
           <PizzaCountButton
-            aria-label="Decrease number of pizzas"
+            aria-label={t("pizzaSettings.decreaseAriaLabel")}
             onClick={handleDecrement}
             disabled={pizzaCount <= PIZZA_COUNT_MIN}
           >
@@ -123,13 +138,13 @@ export function PizzaSettings({
           </PizzaCountButton>
           <PizzaCountValue>{pizzaCount}</PizzaCountValue>
           <PizzaCountButton
-            aria-label="Increase number of pizzas"
+            aria-label={t("pizzaSettings.increaseAriaLabel")}
             onClick={handleIncrement}
             disabled={pizzaCount >= PIZZA_COUNT_MAX}
           >
             +
           </PizzaCountButton>
-          <PizzaCountUnit>pizzas</PizzaCountUnit>
+          <PizzaCountUnit>{t("pizzaSettings.pizzasUnit")}</PizzaCountUnit>
         </PizzaCountRow>
       </Section>
     </SettingsCard>

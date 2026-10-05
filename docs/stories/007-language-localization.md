@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Verified
 
 ## User Story
 
@@ -30,6 +30,106 @@ Translation resources should use structured translation keys with separate
 resources for each supported locale.
 
 English is the application's fallback language.
+
+## Feature Summary
+
+Add English (`en-US`) / Spanish (`es-MX`) localization to the Pizza Dough
+Calculator's UI: a language selector in the header, a localStorage-persisted
+language preference with browser-language-based fallback, and translation
+(via translation keys resolved against per-locale resources) of all existing
+user-facing text — headings, labels, buttons, table headings, ingredient
+names, and thickness labels — while keeping the domain calculation layer
+independent of the localization mechanism and leaving all calculated numeric
+results unchanged.
+
+## Functional Requirements
+
+1. The application supports exactly two locales: `en-US` (runtime fallback)
+   and `es-MX`.
+2. On startup, the active language is resolved in priority order: (a) a
+   valid, supported value stored in localStorage; (b) the browser's
+   preferred language, where a Spanish language/locale resolves to `es-MX`;
+   (c) `en-US` otherwise.
+3. An invalid or unsupported value stored in localStorage must not cause the
+   application to fail; resolution falls back to (b)/(c) above as if no
+   value were stored.
+4. A language selector is rendered in the top-right area of the application
+   header, offering "🇺🇸 English" and "🇲🇽 Español". Each option always
+   displays its own native name regardless of the currently active locale
+   (no translation key is required for these two labels).
+5. Selecting a language updates all localized, user-visible content
+   immediately, without a page reload, and persists the selection to
+   localStorage.
+6. After a reload or reopen, a previously persisted language selection takes
+   priority over browser-language detection.
+7. All user-facing strings currently hard-coded in components — page and
+   section headings, form/control labels, buttons, helper and validation
+   text, table headings, ingredient names, thickness labels, and other
+   descriptive text — are rendered through translation keys resolved
+   against per-locale translation resources, rather than through
+   component-level conditional branching on the active language (e.g.
+   `language === "es-MX" ? "Ingredientes" : "Ingredients"`).
+8. Translation resources exist for `en-US` and `es-MX` with structural key
+   parity verified in both directions; a key present in only one locale's
+   resource is a defect regardless of which locale is missing it.
+9. If a translation is unexpectedly missing for the active locale, the
+   English translation is displayed as a fallback; this fallback is a
+   resilience mechanism and is not a substitute for complete translation
+   resources.
+10. Ingredient display names and thickness display labels are resolved by
+    the presentation layer from the domain layer's existing stable
+    identifiers (ingredient keys such as `flour`/`water`; thickness keys
+    `thin`/`standard`/`thick`), not from new identifiers introduced solely
+    for translation, and not from English display strings stored in domain
+    configuration.
+11. The domain layer and domain configuration (`src/domain/`) have no
+    dependency on the localization/i18n library and do not branch on the
+    active language.
+12. Changing the active language does not alter any calculated numeric
+    result (dough-ball weight, total dough weight, ingredient weights,
+    baker's percentages, hydration) for identical calculator inputs.
+13. Locale-specific numeric or unit-system formatting is out of scope; the
+    measurement system (inches for diameter, grams for weights) is
+    unaffected by the active language.
+14. Spanish translations use natural, commonly understood Mexican Spanish
+    terminology rather than literal word-for-word translation, per the
+    Spanish Translation Guidelines above.
+15. `docs/PROJECT.md`, `docs/ARCHITECTURE.md`, `docs/CODING_STANDARDS.md`,
+    and `docs/TESTING.md` document `en-US`/`es-MX` as supported locales, the
+    localization mechanism, domain/localization independence, translation
+    key parity, and English runtime fallback as project-wide standards. At
+    the time of this analysis, these documents already contain this
+    content; the Implementation Agent should verify it remains accurate and
+    consistent with what is actually implemented, updating it if the
+    implementation diverges from what is currently documented.
+
+## Edge Cases
+
+- Browser preferred language is a Spanish variant other than `es-MX` (e.g.
+  `es-ES`, `es-AR`, bare `es`) — must still resolve to `es-MX` (AC-007-02).
+- Browser preferred language is a non-Spanish locale that is not English
+  (e.g. `fr-FR`, `pt-BR`) and no stored preference exists — must resolve to
+  the `en-US` default, not fail or display a mixture.
+- localStorage is unavailable or throws when read/written (e.g. private
+  browsing mode, storage disabled) — the application must still start and
+  function, treating the condition the same as "no stored preference"
+  rather than crashing.
+- The user reselects the language that is already active — a no-op with no
+  errors and no unnecessary content flash.
+- The user switches languages rapidly — displayed content must not become a
+  stale mixture of the previous and newly selected language.
+- The user switches languages while calculator inputs are at non-default
+  values (e.g. a non-default diameter, pizza count, or thickness) — input
+  values/state and calculated results must be preserved; only localized text
+  changes (AC-007-11).
+- Calculator inputs at boundary values (minimum/maximum diameter, pizza
+  count of 1, each thickness option) must still render fully localized
+  surrounding text in both locales.
+- Existing automated tests that currently assert specific hard-coded English
+  text must be updated to remain locale-aware (e.g. asserting against the
+  active locale's resource value or explicitly rendering with `en-US`)
+  rather than left asserting literal strings that no longer reflect how the
+  text is produced.
 
 ## Domain and Presentation Separation
 
@@ -382,6 +482,27 @@ minimum:
 - Stored preference taking precedence over browser language
 - Representative content from the application being translated
 - Calculator results remaining unchanged when language changes
+
+### AC-007-14 — Domain Layer Independence from Localization
+
+Given the domain layer (`src/domain/`) and domain configuration,
+when the localization mechanism is implemented,
+then `src/domain/` contains no import of, or dependency on, the
+localization/i18n library, and ingredient and thickness display names
+presented to the user are resolved by the presentation layer from existing
+stable domain identifiers (e.g. `flour`, `thin`) rather than from English
+strings stored in domain configuration (e.g. `RECIPE_INGREDIENTS[key].name`
+in `src/domain/recipe.ts`) or from component-level logic that branches on
+the active language.
+
+## Open Questions
+
+None. The story resolves the material implementation decisions needed to
+proceed (localization library and resource organization, the localStorage
+key name and stored-value representation, exact Spanish wording, and header
+layout fidelity) by explicitly deferring them to the Implementation Agent as
+documented technical decisions, consistent with `docs/ARCHITECTURE.md` and
+`docs/CODING_STANDARDS.md`.
 
 ## Out of Scope
 
